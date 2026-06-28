@@ -1,6 +1,8 @@
 // src/pages/Help.jsx
 import { useState } from 'react';
 import { FaHeart, FaHandsHelping, FaBone, FaTimes } from 'react-icons/fa';
+// ДОБАВИЛИ: Импорт баннера из ассетов
+import aboutBanner from '../assets/about.png'; 
 
 export default function Help() {
     // Состояние для управления открытым модальным окном
@@ -87,98 +89,121 @@ export default function Help() {
     return (
         <div style={{ 
             fontFamily: 'sans-serif', 
-            backgroundColor: '#F8FAF7', // Очень мягкий, свежий светлый фон вместо серого
+            backgroundColor: '#F8FAF7', 
             minHeight: 'calc(100vh - 80px)', 
-            padding: '60px 5%' 
+            paddingBottom: '80px'
         }}>
             
-            {/* ШАПКА СТРАНИЦЫ */}
-            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-                <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#1E2D24', marginBottom: '15px' }}>
-                    Как помочь нашему приюту
-                </h1>
-                <p style={{ fontSize: '16px', color: '#555555', maxWidth: '600px', margin: '0 auto', lineHeight: '1.5' }}>
-                    Каждое ваше действие, будь то финансовый перевод, пачка корма или пара часов прогулки, делает жизнь наших подопечных счастливее.
-                </p>
+            <div style={{ 
+                width: '100%', 
+                height: '400px',          
+                overflow: 'hidden',       
+                position: 'relative',
+                backgroundColor: '#F5F5F5' 
+            }}>
+                <img 
+                    src={aboutBanner} 
+                    alt="Как помочь приюту" 
+                    style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',     
+                        objectPosition: 'center', 
+                        display: 'block'
+                    }} 
+                />
             </div>
 
-            {/* СЕТКА С КАРТОЧКАМИ */}
-            <div style={{ 
-                maxWidth: '1100px', 
-                margin: '0 auto', 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                gap: '30px',
-                marginTop: '90px'
-            }}>
-                {helpCards.map((card) => (
-                    <div 
-                        key={card.id} 
-                        style={{ 
-                            backgroundColor: '#FFFFFF', 
-                            borderRadius: '12px', 
-                            padding: '30px', 
-                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)', 
-                            display: 'flex', 
-                            flexDirection: 'column', 
-                            justifyContent: 'between',
-                            border: '1px solid #EEF2ED'
-                        }}
-                    >
-                        <div>
-                            {/* Контейнер для иконки */}
-                            <div style={{ 
-                                width: '60px', 
-                                height: '60px', 
-                                borderRadius: '50%', 
-                                backgroundColor: '#F4F7F5', 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'center', 
-                                marginBottom: '20px' 
-                            }}>
-                                {card.icon}
-                            </div>
+            <div style={{ padding: '25px 5%' }}>
+                
+                <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                    <h1 style={{ fontSize: '32px', fontWeight: '500', color: '#000000', marginBottom: '15px' }}>
+                        Как помочь нашему приюту
+                    </h1>
+                    <p style={{ fontSize: '16px', color: '#333333', maxWidth: '600px', margin: '0 auto', lineHeight: '1.95' }}>
+                        Каждое ваше действие, будь то финансовый перевод, пачка корма или пара часов прогулки, делает жизнь наших подопечных счастливее.
+                    </p>
+                </div>
 
-                            <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1E2D24', marginBottom: '12px' }}>
-                                {card.title}
-                            </h3>
-                            
-                            <p style={{ fontSize: '14px', color: '#666666', lineHeight: '1.6', marginBottom: '25px' }}>
-                                {card.description}
-                            </p>
-                        </div>
-
-                        {/* Кнопка "Подробно" */}
-                        <button 
-                            onClick={() => setActiveModal(card)}
+                {/* СЕТКА С КАРТОЧКАМИ */}
+                <div style={{ 
+                    maxWidth: '1100px', 
+                    margin: '0 auto', 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                    gap: '30px',
+                    marginTop: '50px' // Немного уменьшил со 190px, так как сверху теперь есть визуальный вес от баннера
+                }}>
+                    {helpCards.map((card) => (
+                        <div 
+                            key={card.id} 
                             style={{ 
-                                marginTop: 'auto',
-                                background: 'transparent', 
-                                border: '2px solid #365E42', 
-                                color: '#365E42', 
-                                padding: '10px 20px', 
-                                borderRadius: '8px', 
-                                fontWeight: '700', 
-                                fontSize: '14px', 
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                width: '100%'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = '#365E42';
-                                e.currentTarget.style.color = '#FFFFFF';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.color = '#365E42';
+                                backgroundColor: '#FFFFFF', 
+                                borderRadius: '12px', 
+                                padding: '30px', 
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)', 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                justifyContent: 'space-between', // Исправил опечатку 'between' -> 'space-between'
+                                border: '1px solid #EEF2ED'
                             }}
                         >
-                            Подробно
-                        </button>
-                    </div>
-                ))}
-            </div>
+                            <div>
+                                {/* Контейнер для иконки */}
+                                <div style={{ 
+                                    width: '60px', 
+                                    height: '60px', 
+                                    borderRadius: '50%', 
+                                    backgroundColor: '#F4F7F5', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    marginBottom: '20px' 
+                                }}>
+                                    {card.icon}
+                                </div>
+
+                                <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1E2D24', marginBottom: '12px' }}>
+                                    {card.title}
+                                </h3>
+                                
+                                <p style={{ fontSize: '14px', color: '#666666', lineHeight: '1.6', marginBottom: '25px' }}>
+                                    {card.description}
+                                </p>
+                            </div>
+
+                            {/* Кнопка "Подробно" */}
+                            <button 
+                                onClick={() => setActiveModal(card)}
+                                style={{ 
+                                    marginTop: 'auto',
+                                    background: 'transparent', 
+                                    border: '2px solid #365E42', 
+                                    color: '#365E42', 
+                                    padding: '10px 20px', 
+                                    borderRadius: '8px', 
+                                    fontWeight: '700', 
+                                    fontSize: '14px', 
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                    width: '100%'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = '#365E42';
+                                    e.currentTarget.style.color = '#FFFFFF';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = '#365E42';
+                                }}
+                            >
+                                Подробно
+                            </button>
+                        </div>
+                    ))}
+                </div>
+
+            </div> {/* Конец внутренней обертки */}
 
             {/* МОДАЛЬНОЕ ОКНО (ВСПЛЫВАЮЩАЯ ПАМЯТКА) */}
             {activeModal && (

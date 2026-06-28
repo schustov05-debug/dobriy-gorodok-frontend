@@ -33,7 +33,7 @@ export default function About() {
 
             {/* ОСНОВНОЙ ТЕКСТОВЫЙ БЛОК */}
             <div style={{ 
-                maxWidth: '880px', 
+                maxWidth: '900px', 
                 margin: '0 auto', 
                 padding: '0 5%', 
                 textAlign: 'center',
@@ -44,8 +44,7 @@ export default function About() {
                     fontSize: '32px', 
                     fontWeight: '500', 
                     color: '#000000', 
-                    marginBottom: '25px',
-                    letterSpacing: '-0.5px'
+                    marginBottom: '25px'
                 }}>
                     Волонтёрский мини-приют «Добрый городок»
                 </h1>
