@@ -116,7 +116,7 @@ export default function Home() {
     };
 
     return (
-        <div style={{ fontFamily: 'sans-serif', backgroundColor: '#FFFFFF', minHeight: '100vh', position: 'relative' }}>
+        <div style={{ fontFamily: 'sans-serif', backgroundColor: '#F8FAF7', minHeight: '100vh', position: 'relative' }}>
             
             {/* ГЛАВНЫЙ БАННЕР */}
             <section style={{
@@ -147,7 +147,7 @@ export default function Home() {
             </section>
 
             {/* СЕКЦИЯ: ПИТОМЦЫ ПРИЮТА */}
-            <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 5%', backgroundColor: '#FFFFFF' }}>
+            <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 5%', backgroundColor: '#F8FAF7' }}>
                 <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '25px', color: '#000000' }}>Питомцы приюта</h2>
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
                     <button style={{ background: '#F4C430', color: '#FFFFFF', border: 'none', padding: '10px 35px', borderRadius: '20px', fontWeight: '700', fontSize: '15px', cursor: 'pointer' }}>Все</button>
@@ -255,65 +255,9 @@ export default function Home() {
                     height: 500
                 }} />
 
-                <img 
-                    src={catGif} 
-                    alt="Машущий котик" 
-                    style={{ 
-                        position: 'absolute',
-                        bottom: '-100px', 
-                        left: '70%', 
-                        transform: 'translateX(-53%)',
-                        height: '199px',  
-                        width: 'auto',
-                        zIndex: 10
-                    }} 
-                />
-            </section>
-
-            {/* НИЖНИЙ ФУТЕР */}
-            <footer style={{ 
-                backgroundColor: '#8BA393', 
-                color: '#000000', 
-                padding: '30px 5%',
-                fontSize: '14px',
-                position: 'relative',
-                zIndex: 1
-            }}>
-                <div style={{ 
-                    maxWidth: '1200px', 
-                    margin: '0 auto', 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                    gap: '20px'
-                }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontWeight: '500' }}>    
-                        <span>📞 +7 (951) 642-97-18</span>            
-                        <span>✉️ info@gmail.com</span>
-                    </div>
-
-                    <div style={{ textAlign: 'center' }}>
-                        <span style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Мы в социальных сетях</span>
-                        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-                            <a href="https://t.me/dobryigorodok" target="_blank" rel="noopener noreferrer" style={{ color: '#000', fontSize: '24px' }}>
-                                <FaTelegramPlane />
-                            </a>
-                            <a href="https://vk.com/dobriy_gorodok" target="_blank" rel="noopener noreferrer" style={{ color: '#000', fontSize: '24px' }}>
-                                <FaVk />
-                            </a>
-                        </div>
-                    </div>
-
-                    <div style={{ fontWeight: '500' }}>
-                        📍 Россия, Санкт-Петербург
-                    </div>
-                </div>
                 
-                <div style={{ marginTop: '30px', fontSize: '16px', textAlign: 'center', color: '#111' }}>
-                    © 2026 Приют «Добрый городок». Все права защищены.
-                </div>
-            </footer>
+            </section>
+            
 
             {/* ПЛАВАЮЩАЯ КНОПКА */}
             <button 

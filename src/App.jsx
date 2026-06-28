@@ -5,16 +5,13 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 //import Pets from './pages/Pets';
 //import PetCard from './pages/PetCard';
-//import About from './pages/About';
-//import Help from './pages/Help';
+import About from './pages/About';
+import Help from './pages/Help';
 //import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 
 const Pets = () => <div style={{ padding: '40px' }}><h2>Каталог питомцев</h2></div>;
 const PetCard = () => <div style={{ padding: '40px' }}><h2>Карточка питомца</h2></div>;
-const About = () => <div style={{ padding: '40px' }}><h2>О приюте</h2></div>;
-const Help = () => <div style={{ padding: '40px' }}><h2>Помощь приюту</h2></div>;
-const Auth = () => <div style={{ padding: '40px' }}><h2>Вход и Регистрация</h2></div>;
 
 function App() {
   return (
@@ -32,11 +29,10 @@ function App() {
               <Route path="/pets/:id" element={<PetCard />} />
               <Route path="/about" element={<About />} />
               <Route path="/help" element={<Help />} />
-              <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<Profile />} />
             </Routes>
           </main>
-          
+          <Footer />
         </div>
       </BrowserRouter>
     </AuthProvider>

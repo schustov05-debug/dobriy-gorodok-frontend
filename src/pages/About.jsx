@@ -1,0 +1,117 @@
+// src/pages/About.jsx
+import { Link } from 'react-router-dom';
+import aboutBanner from '../assets/about.png'; 
+
+export default function About() {
+    return (
+        <div style={{ 
+            fontFamily: 'sans-serif', 
+            backgroundColor: '#F8FAF7', 
+            minHeight: 'calc(100vh - 80px)', 
+            paddingBottom: '80px' 
+        }}>
+
+            <div style={{ 
+                width: '100%', 
+                height: '400px',          // Строго фиксированная высота баннера
+                overflow: 'hidden',       // Скрываем всё, что выходит за рамки 400px
+                position: 'relative',
+                backgroundColor: '#F5F5F5' 
+            }}>
+                <img 
+                    src={aboutBanner} 
+                    alt="О приюте — Волонтёры и питомцы" 
+                    style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',     // Изображение масштабируется без искажения пропорций
+                        objectPosition: 'center', // Фокус картинки всегда остается строго по центру
+                        display: 'block'
+                    }} 
+                />
+            </div>
+
+            {/* ОСНОВНОЙ ТЕКСТОВЫЙ БЛОК */}
+            <div style={{ 
+                maxWidth: '880px', 
+                margin: '0 auto', 
+                padding: '0 5%', 
+                textAlign: 'center',
+                marginTop: '50px' 
+            }}>
+                
+                <h1 style={{ 
+                    fontSize: '32px', 
+                    fontWeight: '500', 
+                    color: '#000000', 
+                    marginBottom: '25px',
+                    letterSpacing: '-0.5px'
+                }}>
+                    Волонтёрский мини-приют «Добрый городок»
+                </h1>
+
+                <p style={{ 
+                    fontSize: '16px', 
+                    lineHeight: '1.95', 
+                    color: '#333333', 
+                    marginBottom: '45px',
+                    textAlign: 'center'
+                }}>
+                    Мы — команда волонтёров мини-приюта «Добрый городок» в Санкт-Петербурге. 
+                    Мы спасаем бездомных кошек и собак, заботимся о них, дарим им заботу и активно 
+                    ищем для каждого любящую семью. Сейчас в нашем приюте живут и ждут своего 
+                    человека более 50 питомцев.
+                </p>
+
+                {/* БЛОК С КНОПКАМИ ДЕЙСТВИЯ */}
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    gap: '20px', 
+                    flexWrap: 'wrap' 
+                }}>
+                    
+                    {/* Кнопка: Помочь приюту (Темно-зеленый стиль) */}
+                    <Link 
+                        to="/help" 
+                        style={{ 
+                            display: 'inline-block', 
+                            background: '#365E42', 
+                            color: '#FFFFFF', 
+                            padding: '14px 35px', 
+                            borderRadius: '8px', 
+                            textDecoration: 'none', 
+                            fontWeight: '700', 
+                            fontSize: '15px',
+                            boxShadow: '0 2px 8px rgba(54, 94, 66, 0.2)',
+                            transition: 'transform 0.2s ease'
+                        }}
+                    >
+                        Помочь приюту
+                    </Link>
+
+                    {/* Кнопка: Питомцы (Золотой акцентный стиль) */}
+                    <Link 
+                        to="/pets" 
+                        style={{ 
+                            display: 'inline-block', 
+                            background: '#F4C430', 
+                            color: '#FFFFFF', 
+                            padding: '14px 35px', 
+                            borderRadius: '8px', 
+                            textDecoration: 'none', 
+                            fontWeight: '700', 
+                            fontSize: '15px',
+                            boxShadow: '0 2px 8px rgba(244, 196, 48, 0.2)',
+                            transition: 'transform 0.2s ease'
+                        }}
+                    >
+                        Питомцы
+                    </Link>
+
+                </div>
+
+            </div>
+        </div>
+    );
+}

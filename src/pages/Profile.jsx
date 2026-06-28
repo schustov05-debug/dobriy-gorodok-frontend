@@ -105,7 +105,7 @@ export default function Profile() {
     };
 
     return (
-        <div style={{ backgroundColor: '#FFFFFF', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+        <div style={{ backgroundColor: '#F8FAF7', minHeight: '100vh', fontFamily: 'sans-serif' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 5%' }}>
 
                 <h1 style={{
@@ -130,7 +130,7 @@ export default function Profile() {
                             <p style={{ color: '#888' }}>Загрузка...</p>
                         ) : favorites.length === 0 ? (
                             <div style={{
-                                background: '#F5F5F0',
+                                background: '#FFFFFF',
                                 borderRadius: '16px',
                                 padding: '40px',
                                 textAlign: 'center',
