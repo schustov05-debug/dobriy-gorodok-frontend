@@ -134,7 +134,7 @@ export default function Home() {
                         Один Друг — <br /> Тысячи <br /> Счастливых Дней
                     </h1>
                     <p style={{ fontSize: '15px', lineHeight: '1.5', color: '#333333', marginBottom: '30px', maxWidth: '420px' }}>
-                        Питомец дарит вам не только улыбку, но и верного друга, который всегда разделит с вами каждый moment. У нас <b>100+</b> животных на любой характер и образ жизни.
+                        Питомец дарит вам не только улыбку, но и верного друга, который всегда разделит с вами каждый момент. У нас <b>100+</b> животных на любой характер и образ жизни.
                     </p>
                     <Link to="/pets" style={{ display: 'inline-block', background: '#365E42', color: '#FFFFFF', padding: '14px 30px', borderRadius: '8px', textDecoration: 'none', fontWeight: '700', fontSize: '15px' }}>
                         Посмотреть питомцев

@@ -113,7 +113,7 @@ export default function Profile() {
                     fontWeight: '700',
                     color: '#1E2D24',
                     marginBottom: '32px',
-                    fontStyle: 'italic',
+                    fontStyle: 'normal',
                 }}>
                     Личный кабинет
                 </h1>
@@ -220,7 +220,7 @@ export default function Profile() {
 
                                 <div>
                                     <label style={{ fontSize: '13px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '5px' }}>
-                                        Имя и фамилия
+                                        Имя
                                     </label>
                                     <input
                                         type="text"
