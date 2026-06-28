@@ -99,17 +99,24 @@ export default function Header() {
     return (
         <>
             <header style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '10px 40px',
                 background: '#FFFFFF',
                 borderBottom: '1px solid #E5E5E5',
                 height: '80px',
                 position: 'sticky',
                 top: 0,
                 zIndex: 100,
+                width: '100%',
             }}>
+                <div style={{
+                    maxWidth: '1100px',
+                    margin: '0 auto',       
+                    padding: '0 40px',      
+                    height: '100%',          
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    boxSizing: 'border-box'
+                }}>
                 <Link to="/">
                     <img src={logoImg} alt="Добрый Городок"
                         style={{ height: '65px', width: 'auto', objectFit: 'contain' }} />
@@ -240,6 +247,7 @@ export default function Header() {
                             Войти на сайт
                         </button>
                     )}
+                </div>
                 </div>
             </header>
 

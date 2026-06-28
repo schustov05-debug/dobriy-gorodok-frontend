@@ -10,4 +10,5 @@ html, body, #root {
   min-height: 100vh;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #ffffff;
+  scrollbar-gutter: stable;
 }
