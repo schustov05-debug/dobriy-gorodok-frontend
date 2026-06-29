@@ -119,7 +119,7 @@ export default function Header() {
                 }}>
                 <Link to="/">
                     <img src={logoImg} alt="Добрый Городок"
-                        style={{ height: '72px', width: 'auto', objectFit: 'contain' }} />
+                        style={{ marginTop:5,height: '75px', width: 'auto', objectFit: 'contain' }} />
                 </Link>
 
                 <nav style={{ display: 'flex', gap: '35px', alignItems: 'center' }}>
