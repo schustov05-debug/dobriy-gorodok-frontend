@@ -152,6 +152,7 @@ export default function Header() {
                     <NavLink to="/">Главная</NavLink>
                     <NavLink to="/pets">Питомцы</NavLink>
                     <NavLink to="/about">О приюте</NavLink>
+                    <NavLink to="/team">О команде</NavLink>
                     <NavLink to="/help">Помощь приюту</NavLink>
                 </nav>
 

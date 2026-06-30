@@ -242,7 +242,7 @@ const toggleFavorite = async () => {
   const currentImage = petImages[activeImgIndex] || null;
 
   return (
-    <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+    <div style={{ backgroundColor: '#F8FAF7', minHeight: '100vh', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 5%' }}>
         <p style={{ fontSize: '14px', color: '#888', marginBottom: '24px' }}>
           <Link to="/" style={{ color: '#888', textDecoration: 'none' }}>Главная</Link> {' / '} <Link to="/pets" style={{ color: '#888', textDecoration: 'none' }}>Питомцы</Link> {' / '} <span style={{ color: '#1E2D24' }}>{pet.name}</span>

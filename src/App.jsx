@@ -8,6 +8,7 @@ import PetCard from './pages/PetCard';
 import About from './pages/About';
 import Help from './pages/Help';
 import Profile from './pages/Profile';
+import AboutTeam from './pages/AboutTeam';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/pets" element={<Pets />} />
               <Route path="/pets/:id" element={<PetCard />} />
               <Route path="/about" element={<About />} />
+              <Route path="/team" element={<AboutTeam />} />
               <Route path="/help" element={<Help />} />
               <Route path="/profile" element={<Profile />} />
             </Routes>

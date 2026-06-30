@@ -180,7 +180,7 @@ export default function Pets() {
   };
 
   return (
-    <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+    <div style={{ backgroundColor: '#F8FAF7', minHeight: '100vh', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 5%', display: 'flex', gap: '32px' }}>
 
         <aside style={{ width: '220px', flexShrink: 0 }}>

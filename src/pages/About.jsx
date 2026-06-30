@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import aboutBanner from '../assets/about.png'; 
 import { useEffect } from 'react';
+import DocumentsSection from '../components/DocumentsSection';
 
 export default function About() {
     useEffect(() => {
@@ -111,7 +112,7 @@ export default function About() {
                     >
                         Питомцы
                     </Link>
-
+                     <DocumentsSection />       
                 </div>
 
             </div>
