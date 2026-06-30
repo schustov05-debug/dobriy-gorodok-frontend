@@ -1,5 +1,5 @@
 // src/pages/Help.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaHeart, FaHandsHelping, FaBone, FaTimes } from 'react-icons/fa';
 // ДОБАВИЛИ: Импорт баннера из ассетов
 import aboutBanner from '../assets/about.png'; 
@@ -7,7 +7,9 @@ import aboutBanner from '../assets/about.png';
 export default function Help() {
     // Состояние для управления открытым модальным окном
     const [activeModal, setActiveModal] = useState(null);
-
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
     // Данные карточек помощи приюту
     const helpCards = [
         {
@@ -172,7 +174,6 @@ export default function Help() {
                                 </p>
                             </div>
 
-                            {/* Кнопка "Подробно" */}
                             <button 
                                 onClick={() => setActiveModal(card)}
                                 style={{ 
@@ -197,7 +198,7 @@ export default function Help() {
                                     e.currentTarget.style.color = '#365E42';
                                 }}
                             >
-                                Подробно
+                                Подробнее
                             </button>
                         </div>
                     ))}

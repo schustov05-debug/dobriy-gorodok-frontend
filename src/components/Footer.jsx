@@ -46,19 +46,7 @@ export default function Footer() {
                     © 2026 Приют «Добрый городок». Все права защищены.
                 </div>
                 
-            <img 
-                src={catGif} 
-                alt="Машущий котик" 
-                style={{ 
-                    position: 'absolute',
-                    top: '-99px', // Меняем bottom на top, чтобы он вылезал НАВЕРХ из футера
-                    left: '65%', 
-                    transform: 'translateX(-53%)',
-                    height: '200px',  
-                    width: 'auto',
-                    zIndex: 10
-                }} 
-            />
+            
         </footer>
     );
 }

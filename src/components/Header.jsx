@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
@@ -24,7 +24,7 @@ const NavLink = ({ to, children }) => {
 };
 
 export default function Header() {
-    const { user, login, logout, notifications, clearNotifications } = useAuth();
+    const { user, login, logout, notifications, clearNotifications, markAsRead, unreadCount } = useAuth();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [mode, setMode] = useState('login');
@@ -36,7 +36,27 @@ export default function Header() {
     
     // Стейт для выпадающего списка уведомлений
     const [showNotifs, setShowNotifs] = useState(false);
+    const notifsRef = useRef(null);
 
+    useEffect(() => {
+        // Функция, которая срабатывает при клике
+        const handleClickOutside = (event) => {
+            // Если клик был вне элемента (notifsRef.current) и не по кнопке открытия
+            if (notifsRef.current && !notifsRef.current.contains(event.target)) {
+                setShowNotifs(false);
+            }
+        };
+
+        // Подписываемся на клики, если окно открыто
+        if (showNotifs) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        // Очистка: удаляем подписку при закрытии или размонтировании
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showNotifs]);
     const openModal = (initialMode = 'login') => {
         setMode(initialMode);
         setEmail('');
@@ -50,7 +70,7 @@ export default function Header() {
         setModalOpen(false);
         setError('');
     };
-
+    
     const switchMode = (newMode) => {
         setMode(newMode);
         setError('');
@@ -58,7 +78,13 @@ export default function Header() {
         setPassword('');
         setConfirmPassword('');
     };
-
+    const toggleNotifications = () => {
+        if (showNotifs === false) { 
+            markAsRead();
+        }
+        setShowNotifs(!showNotifs);
+    };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -150,7 +176,7 @@ export default function Header() {
 
                             <div style={{ position: 'relative' }}>
                                 <button 
-                                    onClick={() => setShowNotifs(!showNotifs)}
+                                    onClick={toggleNotifications}
                                     style={{
                                         background: 'none',
                                         border: 'none',
@@ -167,7 +193,7 @@ export default function Header() {
                                         <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="#365E42"/>
                                     </svg>
                                     
-                                    {notifications?.length > 0 && (
+                                    {unreadCount > 0 && (
                                         <span style={{
                                             position: 'absolute',
                                             top: '0px',
@@ -184,13 +210,15 @@ export default function Header() {
                                             justifyContent: 'center',
                                             border: '2px solid #FFF'
                                         }}>
-                                            {notifications.length}
+                                            {unreadCount}
                                         </span>
                                     )}
                                 </button>
 
                                 {showNotifs && (
-                                    <div style={{
+                                    <div 
+                                    ref={notifsRef}
+                                    style={{
                                         position: 'absolute',
                                         top: '120%',
                                         right: '-10px',

@@ -1,8 +1,12 @@
 // src/pages/About.jsx
 import { Link } from 'react-router-dom';
 import aboutBanner from '../assets/about.png'; 
+import { useEffect } from 'react';
 
 export default function About() {
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
     return (
         <div style={{ 
             fontFamily: 'sans-serif', 

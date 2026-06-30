@@ -16,17 +16,19 @@ export default function Profile() {
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveError, setSaveError] = useState('');
 
-    // Только избранное
+    // Список избранных питомцев
     const [favorites, setFavorites] = useState([]);
     const [dataLoading, setDataLoading] = useState(false);
 
     // Если не авторизован — редирект на главную
     useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         if (!user) navigate('/');
     }, [user, navigate]);
 
     // Загружаем профиль при входе
     useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         if (!user) return;
         const fetchProfile = async () => {
             try {
@@ -42,21 +44,34 @@ export default function Profile() {
         fetchProfile();
     }, [user]);
 
-    // Загружаем только избранное
+    // Умная загрузка избранного с объединением данных на фронтенде
     useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         if (!user) return;
-        const fetchFavorites = async () => {
+        const fetchFavoritesData = async () => {
             setDataLoading(true);
             try {
-                const res = await api.get('/api/favorites');
-                setFavorites(res.data);
+                const favRes = await api.get('/api/favorites');
+                const petsRes = await api.get('/api/pets');
+                
+                const favIdsArray = favRes.data; 
+                const allPetsArray = petsRes.data;
+
+                const fullFavoritePets = allPetsArray.filter(pet => {
+                    return favIdsArray.some(fav => {
+                        if (typeof fav === 'string') return fav === pet.id;
+                        return fav.pet_id === pet.id;
+                    });
+                });
+
+                setFavorites(fullFavoritePets);
             } catch (err) {
-                console.error('Ошибка загрузки данных:', err);
+                console.error('Ошибка загрузки данных избранного:', err);
             } finally {
                 setDataLoading(false);
             }
         };
-        fetchFavorites();
+        fetchFavoritesData();
     }, [user]);
 
     const handleSaveProfile = async (e) => {
@@ -78,7 +93,7 @@ export default function Profile() {
     const handleRemoveFavorite = async (petId) => {
         try {
             await api.delete(`/api/favorites/${petId}`);
-            setFavorites(prev => prev.filter(f => f.pet_id !== petId));
+            setFavorites(prev => prev.filter(pet => pet.id !== petId));
         } catch (err) {
             console.error('Ошибка удаления из избранного:', err);
         }
@@ -89,7 +104,6 @@ export default function Profile() {
         navigate('/');
     };
 
-    // Чтобы React не падал до того, как сработает navigate('/')
     if (!user) return null;
 
     const inputStyle = {
@@ -113,14 +127,13 @@ export default function Profile() {
                     fontWeight: '700',
                     color: '#1E2D24',
                     marginBottom: '32px',
-                    fontStyle: 'normal',
                 }}>
                     Личный кабинет
                 </h1>
 
                 <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
 
-                    {/* ── ЛЕВАЯ ЧАСТЬ: Хочу познакомиться (Избранное) ── */}
+                    {/* ── ЛЕВАЯ ЧАСТЬ: Избранное ── */}
                     <div style={{ flex: 1 }}>
                         <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#365E42', margin: '0 0 24px 0' }}>
                             Хочу познакомиться
@@ -139,51 +152,96 @@ export default function Profile() {
                                 <div style={{ fontSize: '48px', marginBottom: '12px' }}>🤍</div>
                                 <p style={{ fontSize: '16px', margin: 0 }}>Список избранного пуст</p>
                                 <p style={{ fontSize: '14px', color: '#aaa', marginTop: '8px' }}>
-                                    Нажимайте на сердечко на карточках питомцев чтобы добавить их сюда
+                                    Нажимайте на сердечко на карточках питомцев, чтобы добавить их сюда
                                 </p>
                             </div>
                         ) : (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-                                {favorites.map((fav) => (
-                                    <div key={fav.pet_id} style={{
-                                        background: '#FDF9EE',
-                                        borderRadius: '16px',
-                                        padding: '16px',
-                                        width: '160px',
-                                        textAlign: 'center',
-                                        position: 'relative',
-                                    }}>
-                                        <button
-                                            onClick={() => handleRemoveFavorite(fav.pet_id)}
+                                {favorites.map((pet) => {
+                                    const petId = pet.id;
+                                    const petName = pet.name || 'Питомец';
+                                    const petPhoto = pet.image_url || pet.photo_url;
+
+                                    return (
+                                        <div 
+                                            key={petId} 
+                                            onClick={() => navigate(`/pets/${petId}`)} // Делаем карточку кликабельной (проверьте ваш роут, если он отличается, например /catalog/${petId})
                                             style={{
-                                                position: 'absolute',
-                                                top: '10px',
-                                                right: '10px',
-                                                background: 'none',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                fontSize: '18px',
-                                                color: '#E74C3C',
-                                                lineHeight: 1,
+                                                background: '#FDF9EE',
+                                                borderRadius: '16px',
+                                                padding: '16px',
+                                                width: '160px',
+                                                textAlign: 'center',
+                                                position: 'relative',
+                                                cursor: 'pointer', // Меняем курсор при наведении
+                                                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                                                transition: 'transform 0.2s, box-shadow 0.2s',
                                             }}
-                                            title="Убрать из избранного"
                                         >
-                                            ♥
-                                        </button>
-                                        {fav.photo_url && (
-                                            <img src={fav.photo_url} alt={fav.pet_name}
-                                                style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '10px', marginBottom: '10px' }} />
-                                        )}
-                                        <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: '#1E2D24' }}>
-                                            {fav.pet_name}
-                                        </p>
-                                    </div>
-                                ))}
+                                            {/* Идеально выровненная круглая кнопка сердечка */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // ОСТАНОВКА СОБЫТИЯ: клик по сердечку не откроет карточку питомца
+                                                    handleRemoveFavorite(petId);
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '12px',
+                                                    right: '12px',
+                                                    background: '#FFFFFF',
+                                                    border: 'none',
+                                                    borderRadius: '50%',
+                                                    width: '28px',
+                                                    height: '28px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    fontSize: '15px',
+                                                    color: '#E74C3C',
+                                                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                                                    zIndex: 2,
+                                                    padding: 0,
+                                                    margin: 0,
+                                                }}
+                                                title="Убрать из избранного"
+                                            >
+                                                ♥
+                                            </button>
+                                            
+                                            {petPhoto ? (
+                                                <img 
+                                                    src={petPhoto} 
+                                                    alt={petName}
+                                                    style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '10px', marginBottom: '10px' }} 
+                                                />
+                                            ) : (
+                                                <div style={{
+                                                    width: '100%',
+                                                    height: '120px',
+                                                    background: '#E8F0E8',
+                                                    borderRadius: '10px',
+                                                    marginBottom: '10px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '40px'
+                                                }}>
+                                                    🐾
+                                                </div>
+                                            )}
+                                            
+                                            <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: '#1E2D24' }}>
+                                                {petName}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
 
-                    {/* ── ПРАВАЯ ЧАСТЬ: Мой профиль (Форма редактирования) ── */}
+                    {/* ── ПРАВАЯ ЧАСТЬ: Мой профиль ── */}
                     <div style={{
                         width: '300px',
                         flexShrink: 0,

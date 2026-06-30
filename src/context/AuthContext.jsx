@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   
   // Добавляем состояние для уведомлений
   const [notifications, setNotifications] = useState([]);
-
+  const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -49,6 +49,11 @@ export function AuthProvider({ children }) {
       localStorage.setItem('notifications', JSON.stringify(updated));
       return updated;
     });
+    setUnreadCount(prev => prev + 1);
+  };
+
+  const markAsRead = () => {
+    setUnreadCount(0);
   };
 
   // Функция для очистки всех уведомлений
@@ -60,7 +65,8 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{ 
       user, login, logout, loading, 
-      notifications, addNotification, clearNotifications 
+      notifications, addNotification, clearNotifications,
+      markAsRead, unreadCount
     }}>
       {children}
     </AuthContext.Provider>

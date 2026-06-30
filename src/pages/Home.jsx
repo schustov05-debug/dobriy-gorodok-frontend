@@ -7,6 +7,7 @@ import api from '../api/axios';
 import dogImg from '../assets/hero-dog.png'; 
 import footerDog from '../assets/footer-dog.png'; 
 import catGif from '../assets/cat-2.gif';
+import PetsCarousel from '../components/PetsCarousel';
 
 export default function Home() {
     const { user } = useAuth(); // Получаем данные об авторизованном пользователе
@@ -25,6 +26,7 @@ export default function Home() {
 
     // ЭФФЕКТ ДЛЯ АВТОЗАПОЛНЕНИЯ ДАННЫХ
     useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         if (user) {
             // Email у нас обычно доступен сразу из контекста авторизации
             setFormData(prev => ({
@@ -147,15 +149,7 @@ export default function Home() {
             </section>
 
             {/* СЕКЦИЯ: ПИТОМЦЫ ПРИЮТА */}
-            <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 5%', backgroundColor: '#F8FAF7' }}>
-                <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '25px', color: '#000000' }}>Питомцы приюта</h2>
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
-                    <button style={{ background: '#F4C430', color: '#FFFFFF', border: 'none', padding: '10px 35px', borderRadius: '20px', fontWeight: '700', fontSize: '15px', cursor: 'pointer' }}>Все</button>
-                    <button style={{ background: 'transparent', color: '#666666', border: '1px solid #365E42', padding: '10px 35px', borderRadius: '20px', fontWeight: '500', fontSize: '15px', cursor: 'pointer' }}>Собаки</button>
-                    <button style={{ background: 'transparent', color: '#666666', border: '1px solid #365E42', padding: '10px 35px', borderRadius: '20px', fontWeight: '500', fontSize: '15px', cursor: 'pointer' }}>Кошки</button>
-                </div>
-                <div style={{ color: '#999', fontStyle: 'italic' }}>Здесь будут выводиться питомцы...</div>
-            </section>
+            <PetsCarousel />
 
             {/* СЕКЦИЯ: ФОРМА ОБРАТНОЙ СВЯЗИ */}
             <section id="questions-form" style={{ 
@@ -257,7 +251,19 @@ export default function Home() {
 
                 
             </section>
-            
+            <img 
+                src={catGif} 
+                alt="Машущий котик" 
+                style={{ 
+                    position: 'absolute',
+                    bottom: '-100px',
+                    left: '29%', 
+                    transform: 'translateX(-50%)',
+                    height: '200px',  
+                    width: 'auto',
+                    zIndex: 10
+                }} 
+            />
 
             {/* ПЛАВАЮЩАЯ КНОПКА */}
             <button 
