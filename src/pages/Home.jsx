@@ -132,7 +132,7 @@ export default function Home() {
                 minHeight: '500px'         
             }}>
                 <div style={{ flex: '1', maxWidth: '480px', zIndex: 2, textAlign: 'left' }}>
-                    <h1 style={{ fontSize: '48px', fontWeight: '700', lineHeight: '1.15', color: '#000000', marginBottom: '20px', letterSpacing: '-0.5px' }}>
+                    <h1 style={{ fontSize: '48px', fontWeight: '550', lineHeight: '1.15', color: '#000000', marginBottom: '20px', letterSpacing: '-0.5px' }}>
                         Один Друг — <br /> Тысячи <br /> Счастливых Дней
                     </h1>
                     <p style={{ fontSize: '15px', lineHeight: '1.5', color: '#333333', marginBottom: '30px', maxWidth: '420px' }}>
@@ -256,10 +256,10 @@ export default function Home() {
                 alt="Машущий котик" 
                 style={{ 
                     position: 'absolute',
-                    bottom: '-100px',
-                    left: '29%', 
+                    bottom: '-90px',
+                    left: '25%', 
                     transform: 'translateX(-50%)',
-                    height: '200px',  
+                    height: '180px',  
                     width: 'auto',
                     zIndex: 10
                 }} 
