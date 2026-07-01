@@ -87,7 +87,7 @@ export default function AboutTeam() {
                             <div style={{
                                 width: '60%',
                                 height: '180px', // Высота фотографии
-                                borderRadius: '12px', // Легкое скругление углов вместо полного круга
+                                borderRadius: '100%', // Легкое скругление углов вместо полного круга
                                 marginBottom: '20px',
                                 border: '2px solid #365E42',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
