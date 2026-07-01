@@ -56,6 +56,7 @@ export default function PetCard() {
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
 
@@ -122,6 +123,28 @@ export default function PetCard() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     loadPetData();
   }, [id, user]);
+
+  // Управление лайтбоксом с клавиатуры: ← → листают фото, Esc закрывает
+  useEffect(() => {
+    if (!lightboxOpen || !pet) return;
+
+    const images = Array.isArray(pet.images) && pet.images.length > 0
+      ? pet.images
+      : (pet.image_url || pet.photo_url ? [pet.image_url || pet.photo_url] : []);
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setLightboxOpen(false);
+      } else if (e.key === 'ArrowLeft' && images.length > 1) {
+        setActiveImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+      } else if (e.key === 'ArrowRight' && images.length > 1) {
+        setActiveImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen, pet]);
 
   // Логика кнопки "Забрать домой"
   const handleApply = async () => {
@@ -285,7 +308,12 @@ export default function PetCard() {
           <div style={{ width: '450px', flexShrink: 0 }}>
             <div style={{ width: '100%', height: '380px', borderRadius: '12px', overflow: 'hidden', background: '#E8F0E8', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
               {proxiedMainSrc ? (
-                <img src={proxiedMainSrc} alt={pet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img
+                  src={proxiedMainSrc}
+                  alt={pet.name}
+                  onClick={() => setLightboxOpen(true)}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }}
+                />
               ) : pet.type === 'dog' ? (
                 <FaDog style={{ fontSize: '100px', color: '#365E42' }} />
               ) : (
@@ -395,6 +423,56 @@ export default function PetCard() {
           </div>
         </div>
       </div>
+
+      {/* ── ЛАЙТБОКС: увеличенное фото питомца ── */}
+      {lightboxOpen && proxiedMainSrc && (
+        <div
+          onClick={() => setLightboxOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2000, padding: '24px', boxSizing: 'border-box'
+          }}
+        >
+          <button
+            onClick={() => setLightboxOpen(false)}
+            style={{
+              position: 'absolute', top: '20px', right: '24px', background: 'rgba(255,255,255,0.15)',
+              border: 'none', borderRadius: '50%', width: '44px', height: '44px', color: '#fff',
+              fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}
+            title="Закрыть"
+          >
+            <FaTimes />
+          </button>
+
+          <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
+            <img
+              src={proxiedMainSrc}
+              alt={pet.name}
+              style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', display: 'block' }}
+            />
+
+            {/* Навигация по галерее прямо в лайтбоксе */}
+            {petImages.length > 1 && (
+              <>
+                <button
+                  onClick={() => setActiveImageIndex(prev => (prev === 0 ? petImages.length - 1 : prev - 1))}
+                  style={{ position: 'absolute', left: '-16px', top: '50%', transform: 'translate(-100%, -50%)', background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <FaChevronLeft style={{ fontSize: '14px', color: '#1E2D24' }} />
+                </button>
+                <button
+                  onClick={() => setActiveImageIndex(prev => (prev === petImages.length - 1 ? 0 : prev + 1))}
+                  style={{ position: 'absolute', right: '-16px', top: '50%', transform: 'translate(100%, -50%)', background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <FaChevronRight style={{ fontSize: '14px', color: '#1E2D24' }} />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── МОДАЛЬНЫЕ ОКНА СИСТЕМЫ ── */}
       {modal && (
