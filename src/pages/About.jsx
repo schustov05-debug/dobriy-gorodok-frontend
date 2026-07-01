@@ -74,44 +74,6 @@ export default function About() {
                     gap: '20px', 
                     flexWrap: 'wrap' 
                 }}>
-                    
-                    {/* Кнопка: Помочь приюту (Темно-зеленый стиль) */}
-                    <Link 
-                        to="/help" 
-                        style={{ 
-                            display: 'inline-block', 
-                            background: '#365E42', 
-                            color: '#FFFFFF', 
-                            padding: '14px 35px', 
-                            borderRadius: '8px', 
-                            textDecoration: 'none', 
-                            fontWeight: '700', 
-                            fontSize: '15px',
-                            boxShadow: '0 2px 8px rgba(54, 94, 66, 0.2)',
-                            transition: 'transform 0.2s ease'
-                        }}
-                    >
-                        Помочь приюту
-                    </Link>
-
-                    {/* Кнопка: Питомцы (Золотой акцентный стиль) */}
-                    <Link 
-                        to="/pets" 
-                        style={{ 
-                            display: 'inline-block', 
-                            background: '#F4C430', 
-                            color: '#FFFFFF', 
-                            padding: '14px 35px', 
-                            borderRadius: '8px', 
-                            textDecoration: 'none', 
-                            fontWeight: '700', 
-                            fontSize: '15px',
-                            boxShadow: '0 2px 8px rgba(244, 196, 48, 0.2)',
-                            transition: 'transform 0.2s ease'
-                        }}
-                    >
-                        Питомцы
-                    </Link>
                      <DocumentsSection />       
                 </div>
 

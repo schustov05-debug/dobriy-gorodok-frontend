@@ -169,10 +169,10 @@ export default function PetsCarousel() {
             onClick={() => navigate('/pets')}
             style={{
               padding: '12px 40px',
-              border: '1.5px solid #1E2D24',
+              border: '0px solid #1E2D24',
               borderRadius: '8px',
-              background: '#FFFFFF',
-              color: '#1E2D24',
+              background: '#F4C430',
+              color: '#FFFFFF',
               fontWeight: '700',
               fontSize: '15px',
               cursor: 'pointer',
