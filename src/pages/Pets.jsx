@@ -4,6 +4,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import { supabase } from '../api/supabaseClient';
+import {
+  FaSearch,
+  FaPaw,
+  FaDog,
+  FaCat,
+  FaHeart,
+  FaRegHeart,
+  FaMars,
+  FaVenus,
+  FaChevronLeft,
+  FaChevronRight,
+  FaLock
+} from "react-icons/fa";
 
 const PETS_PER_PAGE = 9;
 
@@ -60,9 +73,12 @@ export default function Pets() {
   const [newAge, setNewAge] = useState(''); 
   const [newGender, setNewGender] = useState('male');
   const [newDescription, setNewDescription] = useState('');
-  const [newFiles, setNewFiles] = useState([]); // Массив для нескольких файлов
+  const [newFiles, setNewFiles] = useState([]); 
   const [submitting, setSubmitting] = useState(false);
   const [favorites, setFavorites] = useState([]);
+
+  // Стейт для модального окна авторизации (Избранное)
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const loadPets = async () => {
     try {
@@ -70,7 +86,6 @@ export default function Pets() {
       setPets(res.data);
 
       if (user) {
-        // Если юзер залогинен, запрашиваем список его избранного
         const favRes = await api.get('/api/favorites');
         const favIds = favRes.data.map(fav => String(fav.pet_id ? fav.pet_id : fav));
         setFavorites(favIds);
@@ -94,7 +109,6 @@ export default function Pets() {
 
   useEffect(() => { setPage(1); }, [search, filterType, filterGender, filterAge]);
 
-  // ОБРАБОТЧИК ДОБАВЛЕНИЯ ПИТОМЦА С МНОЖЕСТВЕННОЙ ЗАГРУЗКОЙ ФОТО
   const handleAddPetSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -102,7 +116,6 @@ export default function Pets() {
     try {
       let finalImageUrls = [];
 
-      // Бежим циклом по всем выбранным файлам
       if (newFiles.length > 0) {
         for (const file of newFiles) {
           const fileExt = file.name.split('.').pop();
@@ -131,7 +144,7 @@ export default function Pets() {
         age: parseInt(newAge, 10),
         gender: newGender,
         description: newDescription,
-        images: finalImageUrls // Отправляем массив ссылок на сервер
+        images: finalImageUrls 
       });
 
       alert('Питомец успешно добавлен!');
@@ -163,18 +176,38 @@ export default function Pets() {
   const toggleGender = (val) => setFilterGender(prev => prev === val ? 'all' : val);
   const toggleType = (val) => setFilterType(prev => prev === val ? 'all' : val);
 
-  const typeBtn = (val, emoji, label) => {
+  const typeBtn = (val, icon, label) => {
     const active = filterType === val;
+
     return (
-      <button onClick={() => toggleType(val)} title={label} style={{ width: '40px', height: '40px', borderRadius: '50%', border: active ? 'none' : '1.5px solid #B0B0B0', background: active ? '#F4C430' : '#fff', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: active ? '0 2px 6px rgba(244,196,48,0.4)' : 'none' }}>{emoji}</button>
+      <button
+        onClick={() => toggleType(val)}
+        title={label}
+        style={{
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          border: active ? 'none' : '1.5px solid #B0B0B0',
+          background: active ? '#F4C430' : '#fff',
+          fontSize: '18px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s',
+          boxShadow: active ? '0 2px 6px rgba(244,196,48,0.4)' : 'none'
+        }}
+      >
+        {icon}
+      </button>
     );
   };
 
-  const genderBtn = (val, emoji, label, color) => {
+  const genderBtn = (val, icon, label, color) => {
     const active = filterGender === val;
     return (
       <button onClick={() => toggleGender(val)} style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '8px 12px', border: active ? `1.5px solid ${color}` : '1.5px solid transparent', borderRadius: '8px', background: active ? `${color}18` : 'transparent', cursor: 'pointer', fontSize: '14px', color: active ? color : '#555', fontWeight: active ? '600' : '400', transition: 'all 0.2s', textAlign: 'left' }}>
-        <span style={{ fontSize: '16px' }}>{emoji}</span> {label} {active && <span style={{ marginLeft: 'auto', fontSize: '12px' }}>✓</span>}
+        <span style={{ display: 'flex', alignItems: 'center', fontSize: '16px', color: active ? color : '#777' }}>{icon}</span> {label} {active && <span style={{ marginLeft: 'auto', fontSize: '12px' }}>✓</span>}
       </button>
     );
   };
@@ -186,21 +219,21 @@ export default function Pets() {
         <aside style={{ width: '220px', flexShrink: 0 }}>
           <div style={{ position: 'relative', marginBottom: '20px' }}>
             <input type="text" placeholder="Поиск по имени..." value={search} onChange={e => setSearch(e.target.value)} style={inputStyle} />
-            <span style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#888' }}>🔍</span>
+            <span style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#888' }}> <FaSearch /></span>
           </div>
 
           <div style={{ background: '#F5F5F0', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '18px' }}>
-              {typeBtn('all', '🐾', 'Все')}
-              {typeBtn('dog', '🐕', 'Собаки')}
-              {typeBtn('cat', '🐈', 'Кошки')}
+              {typeBtn('all', <FaPaw />, 'Все')}
+              {typeBtn('dog', <FaDog />, 'Собаки')}
+              {typeBtn('cat', <FaCat />, 'Кошки')}
             </div>
 
             <div style={{ marginBottom: '16px' }}>
               <p style={{ fontSize: '11px', fontWeight: '700', color: '#888', margin: '0 0 8px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Пол</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {genderBtn('male', '♂', 'Мальчик', '#4A90D9')}
-                {genderBtn('female', '♀', 'Девочка', '#D9608A')}
+                {genderBtn('male', <FaMars />, 'Мальчик', '#4A90D9')}
+                {genderBtn('female', <FaVenus />, 'Девочка', '#D9608A')}
               </div>
             </div>
 
@@ -228,24 +261,44 @@ export default function Pets() {
           {loading ? (
             <p style={{ color: '#888' }}>Загрузка питомцев...</p>
           ) : filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: '#888' }}><div style={{ fontSize: '48px', marginBottom: '12px' }}>🐾</div><p style={{ fontSize: '16px' }}>Питомцы не найдены</p></div>
+            <div style={{ textAlign: 'center', padding: '60px 0', color: '#888' }}>
+              <div style={{ fontSize: '48px', marginBottom: '12px', display: 'flex', justifyContent: 'center' }}>
+                <FaPaw />
+              </div>
+              <p style={{ fontSize: '16px' }}>Питомцы не найдены</p>
+            </div>
           ) : (
             <>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '32px' }}>
                 {paginated.map(pet => (
-    <PetItem 
-      key={pet.id} 
-      pet={pet} 
-      user={user} // Передаем юзера
-      isFavoriteInit={favorites.includes(String(pet.id))} // Передаем статус "в избранном"
-    />
-  ))}
+                  <PetItem 
+                    key={pet.id} 
+                    pet={pet} 
+                    user={user} 
+                    isFavoriteInit={favorites.includes(String(pet.id))} 
+                    onAuthRequired={() => setShowAuthModal(true)} 
+                  />
+                ))}
               </div>
               {totalPages > 1 && <Pagination page={page} totalPages={totalPages} setPage={setPage} />}
             </>
           )}
         </div>
       </div>
+
+      {/* ── МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ ДЛЯ ИЗБРАННОГО ── */}
+      {showAuthModal && (
+        <div onClick={() => setShowAuthModal(false)} style={modalOverlayStyle}>
+          <div onClick={e => e.stopPropagation()} style={modalContentStyle}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+              <FaLock style={{ fontSize: '40px', color: '#365E42' }} />
+            </div>
+            <h3 style={{ color: '#1E2D24', marginBottom: '10px', marginTop: 0 }}>Необходима авторизация</h3>
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>Пожалуйста, войдите в систему, чтобы добавлять питомцев в избранное.</p>
+            <button onClick={() => setShowAuthModal(false)} style={{ width: '100%', padding: '12px', background: '#365E42', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '700', fontSize: '15px', cursor: 'pointer' }}>Понятно</button>
+          </div>
+        </div>
+      )}
 
       {/* ── МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ ПИТОМЦА ── */}
       {isAddModalOpen && (
@@ -270,7 +323,6 @@ export default function Pets() {
               <textarea placeholder="Описание питомца..." value={newDescription} onChange={e => setNewDescription(e.target.value)} style={{ ...inputStyle, height: '80px', resize: 'none' }} />
 
               <label style={{ fontSize: '13px', fontWeight: '700', color: '#365E42' }}>Выбрать фото (можно несколько):</label>
-              {/* Добавлен атрибут multiple и изменен стейт */}
               <input type="file" accept="image/*" multiple onChange={e => setNewFiles(Array.from(e.target.files))} required />
 
               <div style={{ display: 'flex', gap: '12px', marginTop: '14px' }}>
@@ -285,10 +337,9 @@ export default function Pets() {
   );
 }
 
-function PetItem({ pet, user, isFavoriteInit }) {
+function PetItem({ pet, user, isFavoriteInit, onAuthRequired }) {
   const [isFavorite, setIsFavorite] = useState(isFavoriteInit);
 
-  // Синхронизируем состояние, когда данные приходят с сервера
   useEffect(() => {
     setIsFavorite(isFavoriteInit);
   }, [isFavoriteInit]);
@@ -298,12 +349,14 @@ function PetItem({ pet, user, isFavoriteInit }) {
     : (pet.image_url || pet.photo_url ? [pet.image_url || pet.photo_url] : []);
   const imageSrc = petImages[0];
 
+  const proxiedImageSrc = imageSrc ? `https://wsrv.nl/?url=${encodeURIComponent(imageSrc)}` : null;
+
   const handleFavoriteClick = async (e) => {
     e.preventDefault(); 
     e.stopPropagation(); 
 
     if (!user) {
-      alert("Пожалуйста, войдите в систему, чтобы добавлять питомцев в избранное");
+      onAuthRequired();
       return;
     }
 
@@ -333,7 +386,7 @@ function PetItem({ pet, user, isFavoriteInit }) {
           border: '1px solid #EFEFEF', 
           transition: 'box-shadow 0.2s, transform 0.2s', 
           cursor: 'pointer',
-          position: 'relative' // Добавляем относительное позиционирование для абсолютного сердечка
+          position: 'relative'
         }} 
         onMouseEnter={e => { 
           e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)'; 
@@ -344,7 +397,6 @@ function PetItem({ pet, user, isFavoriteInit }) {
           e.currentTarget.style.transform = 'none'; 
         }}
       >
-        {/* Кнопка Избранное (Сердечко) поверх изображения */}
         <button
           onClick={handleFavoriteClick}
           style={{
@@ -357,29 +409,46 @@ function PetItem({ pet, user, isFavoriteInit }) {
             width: '36px',
             height: '36px',
             cursor: 'pointer',
-            fontSize: '20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            // МЕНЯЕМ ЭТУ СТРОКУ: динамический цвет для иконки
             color: isFavorite ? '#E63946' : '#1E2D24', 
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             zIndex: 2,
             transition: 'transform 0.1s ease, color 0.2s ease',
-            lineHeight: 1
           }}
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
         >
-          {isFavorite ? '♥' : '♡'}
+          {isFavorite ? <FaHeart style={{ fontSize: '18px' }} /> : <FaRegHeart style={{ fontSize: '18px' }} />}
         </button>
 
         <div style={{ width: '100%', height: '200px', background: '#E8F0E8', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-          {imageSrc ? <img src={imageSrc} alt={pet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '60px' }}>{pet.type === 'dog' ? '🐕' : '🐈'}</span>}
+          {proxiedImageSrc ? (
+            <img src={proxiedImageSrc} alt={pet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : pet.type === 'dog' ? (
+            <FaDog style={{ fontSize: '60px', color: '#365E42' }} />
+          ) : (
+            <FaCat style={{ fontSize: '60px', color: '#365E42' }} />
+          )}
         </div>
+        
         <div style={{ padding: '14px 16px' }}>
           <p style={{ margin: '0 0 4px', fontWeight: '700', fontSize: '16px', color: '#1E2D24' }}>{pet.name}</p>
-          <p style={{ margin: '0 0 10px', fontSize: '13px', color: '#666' }}>{pet.gender === 'male' ? '♂ мальчик' : '♀ девочка'} · {ageLabel(pet.age)}</p>
+          
+          <p style={{ margin: '0 0 10px', fontSize: '13px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+            {pet.gender === 'male' ? (
+              <>
+                <FaMars style={{ color: '#4A90D9', fontSize: '14px' }} /> мальчик
+              </>
+            ) : (
+              <>
+                <FaVenus style={{ color: '#D9608A', fontSize: '14px' }} /> девочка
+              </>
+            )}
+            <span>· {ageLabel(pet.age)}</span>
+          </p>
+          
           <div style={{ display: 'inline-block', padding: '6px 18px', border: '1.5px solid #365E42', borderRadius: '20px', fontSize: '13px', color: '#365E42', fontWeight: '500' }}>Подробнее</div>
         </div>
       </div>
@@ -402,9 +471,13 @@ function Pagination({ page, totalPages, setPage }) {
   const btnStyle = (active) => ({ width: '36px', height: '36px', borderRadius: '50%', border: active ? 'none' : '1.5px solid #D0D0D0', background: active ? '#365E42' : '#fff', color: active ? '#fff' : '#333', fontWeight: active ? '700' : '400', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' });
   return (
     <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', alignItems: 'center', paddingBottom: '20px' }}>
-      <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ ...btnStyle(false), opacity: page === 1 ? 0.4 : 1 }}>←</button>
+      <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ ...btnStyle(false), opacity: page === 1 ? 0.4 : 1 }}>
+        <FaChevronLeft style={{ fontSize: '11px' }} />
+      </button>
       {getPages().map((p, i) => p === '...' ? <span key={`dot${i}`} style={{ padding: '0 4px', color: '#888' }}>...</span> : <button key={p} onClick={() => setPage(p)} style={btnStyle(p === page)}>{p}</button>)}
-      <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ ...btnStyle(false), opacity: page === totalPages ? 0.4 : 1 }}>→</button>
+      <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ ...btnStyle(false), opacity: page === totalPages ? 0.4 : 1 }}>
+        <FaChevronRight style={{ fontSize: '11px' }} />
+      </button>
     </div>
   );
 }

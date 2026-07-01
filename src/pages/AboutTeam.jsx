@@ -31,8 +31,8 @@ export default function AboutTeam() {
         
     ];
     useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
 
     return (
         <main style={{ backgroundColor: '#F8FAF7', minHeight: 'calc(100vh - 80px)', padding: '30px 40px', boxSizing: 'border-box' }}>
@@ -83,11 +83,11 @@ export default function AboutTeam() {
                                 e.currentTarget.style.borderColor = '#E5E5E5';
                             }}
                         >
-                            {/* Круглый контейнер под фото */}
+                            {/* Прямоугольный контейнер под фото */}
                             <div style={{
-                                width: '130px',
-                                height: '130px',
-                                borderRadius: '50%',
+                                width: '60%',
+                                height: '180px', // Высота фотографии
+                                borderRadius: '12px', // Легкое скругление углов вместо полного круга
                                 marginBottom: '20px',
                                 border: '2px solid #365E42',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -103,7 +103,7 @@ export default function AboutTeam() {
                                     style={{ 
                                         width: '100%', 
                                         height: '100%', 
-                                        objectFit: 'cover' 
+                                        objectFit: 'cover' // Фото будет аккуратно заполнять весь прямоугольник
                                     }} 
                                 />
                             </div>

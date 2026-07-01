@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import { FaHeart, FaRegHeart, FaPaw, FaCheck } from 'react-icons/fa';
 
 export default function Profile() {
     const { user, logout } = useAuth();
@@ -74,13 +75,36 @@ export default function Profile() {
         fetchFavoritesData();
     }, [user]);
 
+    const handlePhoneChange = (e) => {
+        // Разрешаем вводить только цифры, +, скобки, пробелы и тире
+        const newPhone = e.target.value.replace(/[^\d+()\-\s]/g, '');
+        setPhone(newPhone);
+    };
+
     const handleSaveProfile = async (e) => {
         e.preventDefault();
         setSaveError('');
         setSaveSuccess(false);
+
+        // 1. Проверка имени (не пустое)
+        if (!fullName.trim()) {
+            setSaveError('Имя не может быть пустым');
+            return;
+        }
+
+        // 2. Проверка номера телефона
+        // Регулярное выражение для проверки российских номеров
+        // Принимает форматы: +7 (999) 123-45-67, 89991234567, 8-999-123-45-67 и т.д.
+        const phoneRegex = /^(\+7|8|7)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
+        
+        if (!phone.trim() || !phoneRegex.test(phone.trim())) {
+            setSaveError('Введите корректный номер телефона (например: +7 999 123-45-67)');
+            return;
+        }
+
         setSaveLoading(true);
         try {
-            await api.put('/api/profile', { full_name: fullName, phone });
+            await api.put('/api/profile', { full_name: fullName.trim(), phone: phone.trim() });
             setSaveSuccess(true);
             setTimeout(() => setSaveSuccess(false), 3000);
         } catch (err) {
@@ -149,7 +173,9 @@ export default function Profile() {
                                 textAlign: 'center',
                                 color: '#888',
                             }}>
-                                <div style={{ fontSize: '48px', marginBottom: '12px' }}>🤍</div>
+                                <div style={{ fontSize: '48px', marginBottom: '12px', display: 'flex', justifyContent: 'center' }}>
+                                    <FaRegHeart style={{ color: '#D8D8D8' }} />
+                                </div>
                                 <p style={{ fontSize: '16px', margin: 0 }}>Список избранного пуст</p>
                                 <p style={{ fontSize: '14px', color: '#aaa', marginTop: '8px' }}>
                                     Нажимайте на сердечко на карточках питомцев, чтобы добавить их сюда
@@ -160,12 +186,20 @@ export default function Profile() {
                                 {favorites.map((pet) => {
                                     const petId = pet.id;
                                     const petName = pet.name || 'Питомец';
-                                    const petPhoto = pet.image_url || pet.photo_url;
+                                    
+                                    // ── Обновленная логика получения картинки через прокси ──
+                                    const petImages = Array.isArray(pet.images) && pet.images.length > 0 
+                                      ? pet.images 
+                                      : (pet.image_url || pet.photo_url ? [pet.image_url || pet.photo_url] : []);
+                                    const imageSrc = petImages[0];
+                                    
+                                    const proxiedImageSrc = imageSrc ? `https://wsrv.nl/?url=${encodeURIComponent(imageSrc)}` : null;
+                                    // ─────────────────────────────────────────────────────────
 
                                     return (
                                         <div 
                                             key={petId} 
-                                            onClick={() => navigate(`/pets/${petId}`)} // Делаем карточку кликабельной (проверьте ваш роут, если он отличается, например /catalog/${petId})
+                                            onClick={() => navigate(`/pets/${petId}`)}
                                             style={{
                                                 background: '#FDF9EE',
                                                 borderRadius: '16px',
@@ -173,15 +207,14 @@ export default function Profile() {
                                                 width: '160px',
                                                 textAlign: 'center',
                                                 position: 'relative',
-                                                cursor: 'pointer', // Меняем курсор при наведении
+                                                cursor: 'pointer',
                                                 boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                                                 transition: 'transform 0.2s, box-shadow 0.2s',
                                             }}
                                         >
-                                            {/* Идеально выровненная круглая кнопка сердечка */}
                                             <button
                                                 onClick={(e) => {
-                                                    e.stopPropagation(); // ОСТАНОВКА СОБЫТИЯ: клик по сердечку не откроет карточку питомца
+                                                    e.stopPropagation();
                                                     handleRemoveFavorite(petId);
                                                 }}
                                                 style={{
@@ -197,7 +230,6 @@ export default function Profile() {
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     cursor: 'pointer',
-                                                    fontSize: '15px',
                                                     color: '#E74C3C',
                                                     boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                                                     zIndex: 2,
@@ -206,12 +238,12 @@ export default function Profile() {
                                                 }}
                                                 title="Убрать из избранного"
                                             >
-                                                ♥
+                                                <FaHeart style={{ fontSize: '14px' }} />
                                             </button>
                                             
-                                            {petPhoto ? (
+                                            {proxiedImageSrc ? (
                                                 <img 
-                                                    src={petPhoto} 
+                                                    src={proxiedImageSrc} 
                                                     alt={petName}
                                                     style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '10px', marginBottom: '10px' }} 
                                                 />
@@ -225,9 +257,9 @@ export default function Profile() {
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    fontSize: '40px'
+                                                    color: '#365E42'
                                                 }}>
-                                                    🐾
+                                                    <FaPaw style={{ fontSize: '40px' }} />
                                                 </div>
                                             )}
                                             
@@ -297,7 +329,7 @@ export default function Profile() {
                                         type="tel"
                                         placeholder="+7 (___) ___-__-__"
                                         value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
+                                        onChange={handlePhoneChange}
                                         style={inputStyle}
                                     />
                                     <p style={{ fontSize: '12px', color: '#999', margin: '5px 0 0' }}>
@@ -310,8 +342,8 @@ export default function Profile() {
                                 )}
 
                                 {saveSuccess && (
-                                    <p style={{ color: '#365E42', fontSize: '13px', margin: 0, fontWeight: '600' }}>
-                                        ✓ Данные сохранены
+                                    <p style={{ color: '#365E42', fontSize: '13px', margin: 0, fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <FaCheck /> Данные сохранены
                                     </p>
                                 )}
 

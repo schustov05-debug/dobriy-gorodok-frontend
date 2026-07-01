@@ -57,6 +57,7 @@ export default function Header() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [showNotifs]);
+    
     const openModal = (initialMode = 'login') => {
         setMode(initialMode);
         setEmail('');
@@ -78,6 +79,7 @@ export default function Header() {
         setPassword('');
         setConfirmPassword('');
     };
+    
     const toggleNotifications = () => {
         if (showNotifs === false) { 
             markAsRead();
@@ -134,7 +136,7 @@ export default function Header() {
                 width: '100%',
             }}>
                 <div style={{
-                    maxWidth: '1100px',
+                    maxWidth: '1350px', // Увеличено с 1100px, чтобы элементы были ближе к краям
                     margin: '0 auto',       
                     padding: '0 40px',      
                     height: '100%',          
@@ -145,15 +147,21 @@ export default function Header() {
                 }}>
                 <Link to="/">
                     <img src={logoImg} alt="Добрый Городок"
-                        style={{ marginTop:5,height: '75px', width: 'auto', objectFit: 'contain' }} />
+                        style={{ marginTop: 5, height: '75px', width: 'auto', objectFit: 'contain' }} />
                 </Link>
 
-                <nav style={{ display: 'flex', gap: '35px', alignItems: 'center' }}>
+                <nav style={{ 
+                    display: 'flex', 
+                    gap: '35px', 
+                    alignItems: 'center',
+                    marginTop: '10px' // Добавлено, чтобы немного опустить вкладки вниз
+                }}>
                     <NavLink to="/">Главная</NavLink>
                     <NavLink to="/pets">Питомцы</NavLink>
                     <NavLink to="/team">О команде</NavLink>
                     <NavLink to="/about">О приюте</NavLink>
                     <NavLink to="/help">Помощь приюту</NavLink>
+                    <NavLink to="/articles">Полезные советы</NavLink>
                 </nav>
 
                 <div style={{ display: 'flex', alignItems: 'center' }}>

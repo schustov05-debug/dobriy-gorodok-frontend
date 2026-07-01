@@ -9,6 +9,7 @@ import About from './pages/About';
 import Help from './pages/Help';
 import Profile from './pages/Profile';
 import AboutTeam from './pages/AboutTeam';
+import Articles from './pages/Articles';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/team" element={<AboutTeam />} />
               <Route path="/help" element={<Help />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/articles" element={<Articles />} />
             </Routes>
           </main>
           <Footer />

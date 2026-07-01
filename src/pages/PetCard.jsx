@@ -4,6 +4,23 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import { supabase } from '../api/supabaseClient';
+import { 
+  FaEdit, 
+  FaPaw, 
+  FaDog, 
+  FaCat, 
+  FaTrashAlt, 
+  FaTimes,
+  FaHeart,
+  FaRegHeart,
+  FaMars,
+  FaVenus,
+  FaChevronLeft,
+  FaChevronRight,
+  FaLock,
+  FaClipboardList,
+  FaExclamationTriangle
+} from 'react-icons/fa';
 
 function ageLabel(totalMonths) {
   if (totalMonths <= 0) return 'совсем малыш';
@@ -30,7 +47,6 @@ function ageLabel(totalMonths) {
   return yearsStr + monthsStr;
 }
 
-
 export default function PetCard() {
   const { id } = useParams();
   const { user, addNotification } = useAuth();
@@ -39,44 +55,43 @@ export default function PetCard() {
 
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [modal, setModal] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
-  // Стейт для активной фотографии в галерее карточки
-  const [activeImgIndex, setActiveImgIndex] = useState(0);
-  
-  // Стейт для полноэкранного увеличения фотографии
-  const [isZoomed, setIsZoomed] = useState(false);
 
+  // Стейт для модальных окон ('edit', 'delete', 'notAuth', 'notAuthFav', 'noProfile', 'confirm' или null)
+  const [modal, setModal] = useState(null); 
+  
   // Стейты для редактирования
   const [editName, setEditName] = useState('');
   const [editType, setEditType] = useState('dog');
   const [editAge, setEditAge] = useState('');
   const [editGender, setEditGender] = useState('male');
   const [editDescription, setEditDescription] = useState('');
-  const [existingImages, setExistingImages] = useState([]); // Оставшиеся старые фото
-  const [editFiles, setEditFiles] = useState([]); // Новые добавляемые фото
+  const [editExistingImages, setEditExistingImages] = useState([]);
+  const [editFiles, setEditFiles] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   const loadPetData = async () => {
     try {
+      setLoading(true);
       const petRes = await api.get(`/api/pets/${id}`);
-      const petData = petRes.data; // Здесь petData создается
+      const petData = petRes.data;
       setPet(petData);
       
-      setEditName(petData.name);
-      setEditType(petData.type);
-      setEditAge(petData.age);
-      setEditGender(petData.gender);
+      // Инициализация полей редактирования
+      setEditName(petData.name || '');
+      setEditType(petData.type || 'dog');
+      setEditAge(petData.age || '');
+      setEditGender(petData.gender || 'male');
       setEditDescription(petData.description || '');
-
-      // Нормализуем картинки в массив для редактирования
-      const petImages = Array.isArray(petData.images) ? petData.images : (petData.image_url || petData.photo_url ? [petData.image_url || petData.photo_url] : []);
-      setExistingImages(petImages);
-      setActiveImgIndex(0); // Сбрасываем на первое фото при загрузке
+      
+      const images = Array.isArray(petData.images) ? petData.images : (petData.image_url || petData.photo_url ? [petData.image_url || petData.photo_url] : []);
+      setEditExistingImages(images);
+      setActiveImageIndex(0);
 
       if (user) {
-        // 1. Проверяем статус заявки на этого питомца
+        // 1. Проверяем статус заявки
         try {
           const appCheck = await api.get(`/api/applications/check/${id}`);
           setHasApplied(appCheck.data.applied);
@@ -86,13 +101,9 @@ export default function PetCard() {
 
         // 2. Проверяем избранное
         try {
-          const favRes = await api.get('/api/favorites');  
-          const currentPetId = String(id);
-          const alreadyFavorite = favRes.data.some(fav => {
-            const favPetId = fav.pet_id ? String(fav.pet_id) : String(fav);
-            return favPetId === currentPetId;
-          });
-          setIsFavorite(alreadyFavorite);
+          const favRes = await api.get('/api/favorites');
+          const isFav = favRes.data.some(fav => String(fav.pet_id ? fav.pet_id : fav) === String(id));
+          setIsFavorite(isFav);
         } catch (e) {
           console.error("Ошибка загрузки избранного:", e);
         }
@@ -101,7 +112,7 @@ export default function PetCard() {
         setIsFavorite(false);
       }
     } catch (err) {
-      console.error("Ошибка при получении данных:", err);
+      console.error('Ошибка загрузки питомца:', err);
     } finally {
       setLoading(false);
     }
@@ -109,10 +120,10 @@ export default function PetCard() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  
-    loadPetData(); 
+    loadPetData();
   }, [id, user]);
 
+  // Логика кнопки "Забрать домой"
   const handleApply = async () => {
     if (!user) { setModal('notAuth'); return; }
     try {
@@ -121,6 +132,7 @@ export default function PetCard() {
     } catch { setModal('notAuth'); return; }
     setModal('confirm');
   };
+
   const isProcessing = useRef(false);
   const handleSubmitApplication = async () => {
     if (isProcessing.current) return;
@@ -140,44 +152,41 @@ export default function PetCard() {
     }
   };
 
-const toggleFavorite = async () => {
-    if (!user) { setModal('notAuth'); return; }
-    
-    // Сохраняем предыдущее состояние для отката в случае ошибки (оптимистичное обновление)
-    const previousState = isFavorite;
-    setIsFavorite(!isFavorite); 
-
+  const handleFavoriteToggle = async () => {
+    if (!user) {
+      setModal('notAuthFav'); // Переключаем на специализированный стейт
+      return;
+    }
+    const prevState = isFavorite;
+    setIsFavorite(!isFavorite);
     try {
-      if (previousState) { 
-        // Если уже в избранном - удаляем
-        await api.delete(`/api/favorites/${pet.id}`); 
-      } else { 
-        // Если не в избранном - добавляем
-        await api.post(`/api/favorites/${pet.id}`); 
+      if (prevState) {
+        await api.delete(`/api/favorites/${id}`);
+      } else {
+        await api.post(`/api/favorites/${id}`);
       }
     } catch (err) {
-      console.error("Ошибка при обновлении избранного:", err);
-      setIsFavorite(previousState); // Возвращаем обратно, если сервер выдал ошибку
+      console.error('Ошибка обновления избранного:', err);
+      setIsFavorite(prevState);
       alert("Не удалось обновить избранное");
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeletePet = async () => {
     try {
-      await api.delete(`/api/pets/${pet.id}`);
+      await api.delete(`/api/pets/${id}`);
+      setModal(null);
       navigate('/pets');
-    } catch { alert('Ошибка при удалении'); }
+    } catch { 
+      alert('Ошибка при удалении'); 
+    }
   };
 
-  // ОБРАБОТЧИК СОХРАНЕНИЯ ИЗМЕНЕНИЙ ПРИ РЕДАКТИРОВАНИИ
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-
     try {
-      let newlyUploadedUrls = [];
-
-      // Загружаем только новые добавленные файлы
+      let uploadedUrls = [];
       if (editFiles.length > 0) {
         for (const file of editFiles) {
           const fileExt = file.name.split('.').pop();
@@ -190,233 +199,290 @@ const toggleFavorite = async () => {
 
           if (uploadError) throw new Error('Не удалось загрузить новые фото');
 
-          const { data: publicUrlData } = supabase.storage
-            .from('pet-photos')
-            .getPublicUrl(filePath);
-
-          newlyUploadedUrls.push(publicUrlData.publicUrl);
+          const { data } = supabase.storage.from('pet-photos').getPublicUrl(filePath);
+          uploadedUrls.push(data.publicUrl);
         }
       }
 
-      // Сливаем старые оставленные фото и новые загруженные
-      const updatedImagesArray = [...existingImages, ...newlyUploadedUrls];
+      const finalImages = [...editExistingImages, ...uploadedUrls];
 
-      await api.put(`/api/pets/${pet.id}`, {
+      await api.put(`/api/pets/${id}`, {
         name: editName,
         type: editType,
         age: parseInt(editAge, 10),
         gender: editGender,
         description: editDescription,
-        images: updatedImagesArray // отправляем обновленный массив
+        images: finalImages
       });
 
-      alert('Изменения сохранены!');
+      alert('Данные питомца успешно обновлены!');
       setModal(null);
       setEditFiles([]);
-      loadPetData(); 
+      loadPetData();
     } catch (err) {
-      alert(err.response?.data?.error || err.message || 'Ошибка редактирования');
+      alert(err.response?.data?.error || err.message || 'Ошибка сохранения данных');
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Перелистывание фотографий по стрелочкам
-  const handlePrevImg = (e) => {
-    e.stopPropagation(); // Чтобы не открывалось увеличение при клике на стрелку
-    setActiveImgIndex((prev) => (prev === 0 ? petImages.length - 1 : prev - 1));
+  const removeExistingImage = (urlToRemove) => {
+    setEditExistingImages(prev => prev.filter(url => url !== urlToRemove));
   };
 
-  const handleNextImg = (e) => {
-    e.stopPropagation(); // Чтобы не открывалось увеличение при клике на стрелку
-    setActiveImgIndex((prev) => (prev === petImages.length - 1 ? 0 : prev + 1));
-  };
+  if (loading) {
+    return (
+      <div style={{ backgroundColor: '#F8FAF7', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#888', fontFamily: 'sans-serif' }}>Загрузка информации о питомце...</p>
+      </div>
+    );
+  }
 
-  if (loading) return <div style={{ padding: '60px', textAlign: 'center', color: '#888' }}>Загрузка...</div>;
-  if (!pet) return <div style={{ padding: '60px', textAlign: 'center' }}><div style={{ fontSize: '48px' }}>🐾</div><p style={{ fontSize: '18px', color: '#888' }}>Питомец не найден</p><Link to="/pets" style={{ color: '#365E42' }}>← Вернуться в каталог</Link></div>;
+  if (!pet) {
+    return (
+      <div style={{ backgroundColor: '#F8FAF7', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', flexDirection: 'column', gap: '12px' }}>
+        <FaPaw style={{ fontSize: '48px', color: '#365E42' }} />
+        <p style={{ color: '#888', fontSize: '18px', margin: 0 }}>Питомец не найден.</p>
+        <Link to="/pets" style={{ color: '#365E42', fontWeight: '600' }}>← Вернуться в каталог</Link>
+      </div>
+    );
+  }
 
-  // Формируем массив изображений для рендера галереи
   const petImages = Array.isArray(pet.images) && pet.images.length > 0 
     ? pet.images 
     : (pet.image_url || pet.photo_url ? [pet.image_url || pet.photo_url] : []);
-  const currentImage = petImages[activeImgIndex] || null;
+
+  const hasImages = petImages.length > 0;
+  const currentRawSrc = hasImages ? petImages[activeImageIndex] : null;
+  const proxiedMainSrc = currentRawSrc ? `https://wsrv.nl/?url=${encodeURIComponent(currentRawSrc)}` : null;
 
   return (
-    <div style={{ backgroundColor: '#F8FAF7', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 5%' }}>
-        <p style={{ fontSize: '14px', color: '#888', marginBottom: '24px' }}>
-          <Link to="/" style={{ color: '#888', textDecoration: 'none' }}>Главная</Link> {' / '} <Link to="/pets" style={{ color: '#888', textDecoration: 'none' }}>Питомцы</Link> {' / '} <span style={{ color: '#1E2D24' }}>{pet.name}</span>
-        </p>
+    <div style={{ backgroundColor: '#F8FAF7', minHeight: 'calc(100vh - 80px)', fontFamily: 'sans-serif', padding: '40px 5%' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        
+        {/* Кнопка возврата */}
+        <Link to="/pets" style={{ textDecoration: 'none', color: '#365E42', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+          <FaChevronLeft style={{ fontSize: '12px' }} /> Назад к каталогу
+        </Link>
 
-        <div style={{ display: 'flex', gap: '48px', alignItems: 'flex-start' }}>
-          <div style={{ width: '420px', flexShrink: 0 }}>
-            {/* Главное фото со стрелочками навигации */}
-            <div style={{ position: 'relative', width: '100%', height: '400px', borderRadius: '16px', overflow: 'hidden', background: '#E8F0E8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {currentImage ? (
-                <img 
-                  src={currentImage} 
-                  alt={pet.name} 
-                  onClick={() => setIsZoomed(true)}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }} 
-                />
+        <div style={{ display: 'flex', gap: '40px', background: '#FFF', borderRadius: '16px', padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', position: 'relative' }}>
+          
+          {/* Кнопка «Избранное» */}
+          <button
+            onClick={handleFavoriteToggle}
+            style={{
+              position: 'absolute', top: '32px', right: '32px', background: '#F0F4F0', border: 'none', borderRadius: '50%',
+              width: '44px', height: '44px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: isFavorite ? '#E63946' : '#1E2D24', boxShadow: '0 2px 10px rgba(0,0,0,0.08)', transition: 'transform 0.2s', zIndex: 10
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            {isFavorite ? <FaHeart style={{ fontSize: '22px' }} /> : <FaRegHeart style={{ fontSize: '22px' }} />}
+          </button>
+
+          {/* ЛЕВАЯ ЧАСТЬ: Изображения */}
+          <div style={{ width: '450px', flexShrink: 0 }}>
+            <div style={{ width: '100%', height: '380px', borderRadius: '12px', overflow: 'hidden', background: '#E8F0E8', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              {proxiedMainSrc ? (
+                <img src={proxiedMainSrc} alt={pet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : pet.type === 'dog' ? (
+                <FaDog style={{ fontSize: '100px', color: '#365E42' }} />
               ) : (
-                <span style={{ fontSize: '100px' }}>{pet.type === 'dog' ? '🐕' : '🐈'}</span>
+                <FaCat style={{ fontSize: '100px', color: '#365E42' }} />
               )}
 
-              {/* Стрелочки переключения (отображаются только если картинок больше одной) */}
+              {/* Стрелки навигации по галерее */}
               {petImages.length > 1 && (
                 <>
                   <button 
-                    onClick={handlePrevImg}
-                    style={{
-                      position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
-                      background: 'rgba(255, 255, 255, 0.8)', border: 'none', borderRadius: '50%',
-                      width: '38px', height: '38px', fontSize: '22px', fontWeight: 'bold', color: '#365E42',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.15)', transition: 'all 0.2s', zIndex: 10, outline: 'none'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#rgba(255, 255, 255, 1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.8)'}
+                    onClick={() => setActiveImageIndex(prev => (prev === 0 ? petImages.length - 1 : prev - 1))}
+                    style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.75)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5 }}
                   >
-                    ‹
+                    <FaChevronLeft style={{ fontSize: '12px', color: '#1E2D24' }} />
                   </button>
                   <button 
-                    onClick={handleNextImg}
-                    style={{
-                      position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
-                      background: 'rgba(255, 255, 255, 0.8)', border: 'none', borderRadius: '50%',
-                      width: '38px', height: '38px', fontSize: '22px', fontWeight: 'bold', color: '#365E42',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.15)', transition: 'all 0.2s', zIndex: 10, outline: 'none'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.8)'}
+                    onClick={() => setActiveImageIndex(prev => (prev === petImages.length - 1 ? 0 : prev + 1))}
+                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.75)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5 }}
                   >
-                    ›
+                    <FaChevronRight style={{ fontSize: '12px', color: '#1E2D24' }} />
                   </button>
                 </>
               )}
             </div>
 
-            {/* МИНИ-ГАЛЕРЕЯ ПОД КАРТИНКОЙ */}
+            {/* Миниатюры */}
             {petImages.length > 1 && (
-              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px', overflowX: 'auto', paddingBottom: '4px' }}>
                 {petImages.map((img, idx) => (
-                  <img 
+                  <div
                     key={idx}
-                    src={img} 
-                    alt="" 
-                    onClick={() => setActiveImgIndex(idx)}
+                    onClick={() => setActiveImageIndex(idx)}
                     style={{
-                      width: '62px',
-                      height: '62px',
-                      objectFit: 'cover',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      border: activeImgIndex === idx ? '2.5px solid #365E42' : '2.5px solid transparent',
-                      boxSizing: 'border-box',
-                      opacity: activeImgIndex === idx ? 1 : 0.6,
-                      transition: 'all 0.2s'
+                      width: '70px', height: '70px', borderRadius: '6px', overflow: 'hidden', cursor: 'pointer',
+                      border: activeImageIndex === idx ? '2.5px solid #365E42' : '2.5px solid transparent',
+                      boxSizing: 'border-box', background: '#E8F0E8', flexShrink: 0
                     }}
-                  />
+                  >
+                    <img src={`https://wsrv.nl/?url=${encodeURIComponent(img)}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
                 ))}
-              </div>
-            )}
-
-            {isAdmin && (
-              <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-                <button onClick={() => setModal('edit')} style={{ flex: 1, padding: '12px', background: '#365E42', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '15px', cursor: 'pointer' }}>✏️ Изменить</button>
-                <button onClick={() => setModal('delete')} style={{ width: '48px', height: '48px', background: '#fff', color: '#C0392B', border: '1.5px solid #C0392B', borderRadius: '10px', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
               </div>
             )}
           </div>
 
-          <div style={{ flex: 1, position: 'relative' }}>
-            <button onClick={toggleFavorite} style={{ position: 'absolute', top: 0, right: 0, background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer', color: isFavorite ? '#E74C3C' : '#ccc', transition: 'color 0.2s' }}>{isFavorite ? '♥' : '♡'}</button>
-            <h1 style={{ fontSize: '36px', fontWeight: '700', color: '#1E2D24', marginBottom: '16px', marginTop: 0 }}>{pet.name}</h1>
-            <p style={{ fontSize: '15px', lineHeight: '1.7', color: '#444', marginBottom: '24px' }}>{pet.description}</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
-              <p style={{ margin: 0, fontSize: '15px' }}><span style={{ color: '#365E42', fontWeight: '700' }}>Возраст: </span>{ageLabel(pet.age)}</p>
-              <p style={{ margin: 0, fontSize: '15px' }}><span style={{ color: '#365E42', fontWeight: '700' }}>Пол: </span>{pet.gender === 'male' ? 'мальчик' : 'девочка'}</p>
+          {/* ПРАВАЯ ЧАСТЬ: Описание */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: '40px' }}>
+            <h1 style={{ fontSize: '32px', color: '#1E2D24', margin: '0 0 12px 0', fontWeight: '700' }}>{pet.name}</h1>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '15px', color: '#555', marginBottom: '20px' }}>
+              {pet.gender === 'male' ? (
+                <>
+                  <FaMars style={{ color: '#4A90D9', fontSize: '16px' }} /> <span>Мальчик</span>
+                </>
+              ) : (
+                <>
+                  <FaVenus style={{ color: '#D9608A', fontSize: '16px' }} /> <span>Девочка</span>
+                </>
+              )}
+              <span style={{ color: '#BBB' }}>•</span>
+              <span>{ageLabel(pet.age)}</span>
             </div>
-            <div style={{ display: 'flex' }}>
-  <button 
-    onClick={handleApply} 
-    disabled={submitting || hasApplied} 
-    style={{ 
-      flex: 1, 
-      padding: '16px 24px', 
-      background: hasApplied ? '#95a5a6' : (submitting ? '#D4A010' : '#F4C430'),
-      cursor: (submitting || hasApplied) ? 'not-allowed' : 'pointer',
-      color: '#fff', 
-      border: 'none', 
-      borderRadius: '30px', 
-      fontWeight: '700', 
-      fontSize: '16px', 
-      cursor: submitting ? 'not-allowed' : 'pointer', // Меняем курсор
-      opacity: submitting ? 0.7 : 1, // Полупрозрачность при отправке
-      transition: 'all 0.2s ease', // Плавная анимация
-      boxShadow: submitting ? 'none' : '0 4px 15px rgba(244, 196, 48, 0.3)' // Мягкая тень для объема
-    }}
-    onMouseEnter={(e) => !submitting && (e.target.style.transform = 'scale(1.02)')}
-    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-  >
-    {hasApplied 
-      ? 'Заявка уже отправлена' 
-      : (submitting ? 'Отправка...' : 'Забрать домой')
-    }
-  </button>
-</div>
+
+            <div style={{ borderTop: '1px solid #EFEFEF', borderBottom: '1px solid #EFEFEF', padding: '16px 0', marginBottom: '20px' }}>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', color: '#1E2D24' }}>О питомце:</h3>
+              <p style={{ margin: 0, color: '#444', lineHeight: '1.6', fontSize: '15px', whiteSpace: 'pre-line' }}>
+                {pet.description || 'У этого питомца пока нет подробного описания, но вы можете узнать о нём подробнее у волонтёров приюта.'}
+              </p>
+            </div>
+
+            {/* Кнопки связи / Действия админа */}
+            <div style={{ marginTop: 'auto', display: 'flex', gap: '12px' }}>
+              <button 
+                onClick={handleApply} 
+                disabled={submitting || hasApplied} 
+                style={{ 
+                  flex: 1, padding: '16px 24px', 
+                  background: hasApplied ? '#95a5a6' : (submitting ? '#D4A010' : '#F4C430'),
+                  color: '#fff', border: 'none', borderRadius: '30px', fontWeight: '700', fontSize: '16px', 
+                  cursor: (submitting || hasApplied) ? 'not-allowed' : 'pointer', 
+                  opacity: submitting ? 0.7 : 1, transition: 'all 0.2s ease', 
+                  boxShadow: submitting ? 'none' : '0 4px 15px rgba(244, 196, 48, 0.3)',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                }}
+                onMouseEnter={(e) => !submitting && !hasApplied && (e.target.style.transform = 'scale(1.02)')}
+                onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+              >
+                <FaPaw /> 
+                {hasApplied 
+                  ? 'Заявка уже отправлена' 
+                  : (submitting ? 'Отправка...' : 'Забрать домой')
+                }
+              </button>
+
+              {isAdmin && (
+                <>
+                  <button onClick={() => setModal('edit')} style={{ background: '#FFF', color: '#365E42', border: '1.5px solid #365E42', padding: '12px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Редактировать">
+                    <FaEdit style={{ fontSize: '18px' }} />
+                  </button>
+                  <button onClick={() => setModal('delete')} style={{ background: '#FFF', color: '#C0392B', border: '1.5px solid #C0392B', padding: '12px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Удалить карточку">
+                    <FaTrashAlt style={{ fontSize: '18px' }} />
+                  </button>
+                </>
+              )}
+            </div>
+
           </div>
         </div>
       </div>
 
-      {/* ── МОДАЛКА УВЕЛИЧЕНИЯ ФОТО (ЛАЙТБОКС) ── */}
-      {isZoomed && currentImage && (
-        <div 
-          onClick={() => setIsZoomed(false)} 
-          style={{ 
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            zIndex: 2000, cursor: 'zoom-out' 
-          }}
-        >
-          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
-            <img 
-              src={currentImage} 
-              alt={pet.name} 
-              style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: '8px', objectFit: 'contain', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }} 
-            />
-            <button 
-              onClick={() => setIsZoomed(false)}
-              style={{
-                position: 'absolute', top: '-40px', right: '0', background: 'none', border: 'none',
-                color: '#fff', fontSize: '32px', cursor: 'pointer', fontWeight: '300', outline: 'none'
-              }}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── ОСТАЛЬНЫЕ МОДАЛКИ ── */}
+      {/* ── МОДАЛЬНЫЕ ОКНА СИСТЕМЫ ── */}
       {modal && (
         <div onClick={() => setModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#FDF9EE', borderRadius: '16px', padding: '36px', maxWidth: '440px', width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)', textAlign: 'center', boxSizing: 'border-box' }}>
 
-            {modal === 'notAuth' && <><div style={{ fontSize: '40px', marginBottom: '12px' }}>🔒</div><h3 style={{ color: '#1E2D24', marginBottom: '10px' }}>Необходима авторизация</h3><button onClick={() => setModal(null)} style={greenBtn}>Понятно</button></>}
+            {/* Окно неавторизованного пользователя для кнопки ЗАЯВКИ */}
+            {modal === 'notAuth' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                  <FaLock style={{ fontSize: '40px', color: '#365E42' }} />
+                </div>
+                <h3 style={{ color: '#1E2D24', marginBottom: '10px', marginTop: 0 }}>Необходима авторизация</h3>
+                <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>Пожалуйста, войдите в систему, чтобы отправлять заявки.</p>
+                <button onClick={() => setModal(null)} style={greenBtn}>Понятно</button>
+              </>
+            )}
+
+            {/* Исправленное окно неавторизованного пользователя для ИЗБРАННОГО */}
+            {modal === 'notAuthFav' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                  <FaLock style={{ fontSize: '40px', color: '#365E42' }} />
+                </div>
+                <h3 style={{ color: '#1E2D24', marginBottom: '10px', marginTop: 0 }}>Необходима авторизация</h3>
+                <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>Пожалуйста, войдите в систему, чтобы добавлять питомцев в избранное.</p>
+                <button onClick={() => setModal(null)} style={greenBtn}>Понятно</button>
+              </>
+            )}
             
-            {modal === 'noProfile' && <><div style={{ fontSize: '40px', marginBottom: '12px' }}>📋</div><h3 style={{ color: '#1E2D24', marginBottom: '10px' }}>Заполните профиль</h3><div style={{ display: 'flex', gap: '12px' }}><button onClick={() => setModal(null)} style={outlineBtn}>Отмена</button><button onClick={() => { setModal(null); navigate('/profile'); }} style={greenBtn}>Перейти в профиль</button></div></>}
+            {modal === 'noProfile' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                  <FaClipboardList style={{ fontSize: '40px', color: '#365E42' }} />
+                </div>
+                <h3 style={{ color: '#1E2D24', marginBottom: '10px', marginTop: 0 }}>Заполните профиль</h3>
+                <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>Укажите имя и номер телефона в профиле, чтобы волонтёры могли связаться с вами.</p>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={() => setModal(null)} style={outlineBtn}>Отмена</button>
+                  <button onClick={() => { setModal(null); navigate('/profile'); }} style={greenBtn}>В профиль</button>
+                </div>
+              </>
+            )}
             
-            {modal === 'confirm' && <><div style={{ fontSize: '40px', marginBottom: '12px' }}>{pet.type === 'dog' ? '🐕' : '🐈'}</div><h3 style={{ color: '#1E2D24', marginBottom: '10px' }}>Отправить заявку?</h3><div style={{ display: 'flex', gap: '12px' }}><button onClick={() => setModal(null)} style={outlineBtn}>Нет</button><button onClick={handleSubmitApplication} disabled={submitting} style={greenBtn}>{submitting ? 'Отправка...' : 'Да, отправить'}</button></div></>}
+            {modal === 'confirm' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                  {pet.type === 'dog' ? (
+                    <FaDog style={{ fontSize: '44px', color: '#365E42' }} />
+                  ) : (
+                    <FaCat style={{ fontSize: '44px', color: '#365E42' }} />
+                  )}
+                </div>
+                <h3 style={{ color: '#1E2D24', marginBottom: '10px', marginTop: 0 }}>Отправить заявку?</h3>
+                <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>Мы отправим запрос на знакомство с питомцем «{pet.name}» администраторам.</p>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={() => setModal(null)} style={outlineBtn}>Нет</button>
+                  <button onClick={handleSubmitApplication} disabled={submitting} style={greenBtn}>
+                    {submitting ? 'Отправка...' : 'Да, отправить'}
+                  </button>
+                </div>
+              </>
+            )}
             
-            {modal === 'delete' && <><div style={{ fontSize: '40px', marginBottom: '12px' }}>⚠️</div><h3 style={{ color: '#C0392B', marginBottom: '10px' }}>Удалить питомца?</h3><div style={{ display: 'flex', gap: '12px' }}><button onClick={() => setModal(null)} style={outlineBtn}>Отмена</button><button onClick={handleDelete} style={{ ...greenBtn, background: '#C0392B' }}>Удалить</button></div></>}
+            {modal === 'delete' && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                  <FaExclamationTriangle style={{ fontSize: '40px', color: '#C0392B' }} />
+                </div>
+                <h3 style={{ color: '#C0392B', marginBottom: '10px', marginTop: 0 }}>Удалить питомца?</h3>
+                <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>Вы уверены, что хотите безвозвратно удалить карточку {pet.name}?</p>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={() => setModal(null)} style={outlineBtn}>Отмена</button>
+                  <button onClick={handleDeletePet} style={{ ...greenBtn, background: '#C0392B' }}>Удалить</button>
+                </div>
+              </>
+            )}
 
             {/* ВСПЛЫВАЮЩЕЕ ОКНО РЕДАКТИРОВАНИЯ */}
             {modal === 'edit' && (
               <div style={{ maxHeight: '80vh', overflowY: 'auto', paddingRight: '4px' }}>
-                <h3 style={{ color: '#1E2D24', marginBottom: '16px', marginTop: 0 }}>Редактирование профиля</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ color: '#1E2D24', margin: 0 }}>Редактирование профиля</h3>
+                  <button onClick={() => setModal(null)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#888', display: 'flex', alignItems: 'center' }}>
+                    <FaTimes />
+                  </button>
+                </div>
+
                 <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left' }}>
                   <input type="text" placeholder="Кличка" value={editName} onChange={e => setEditName(e.target.value)} required style={inputStyle} />
                   <select value={editType} onChange={e => setEditType(e.target.value)} style={inputStyle}>
@@ -432,29 +498,31 @@ const toggleFavorite = async () => {
                   
                   {/* УПРАВЛЕНИЕ СУЩЕСТВУЮЩИМИ ФОТО */}
                   <label style={{ fontSize: '13px', fontWeight: '700', color: '#365E42', margin: '4px 0 0' }}>Текущие фото:</label>
-                  {existingImages.length === 0 ? (
+                  {editExistingImages.length === 0 ? (
                     <p style={{ fontSize: '12px', color: '#888', margin: 0 }}>Нет загруженных фото</p>
                   ) : (
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      {existingImages.map((img, idx) => (
-                        <div key={idx} style={{ position: 'relative', width: '55px', height: '55px' }}>
-                          <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }} />
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', background: '#FFF', padding: '8px', borderRadius: '8px', border: '1.5px solid #D0D0D0' }}>
+                      {editExistingImages.map((url, idx) => (
+                        <div key={idx} style={{ position: 'relative', width: '55px', height: '55px', borderRadius: '4px', overflow: 'hidden' }}>
+                          <img src={`https://wsrv.nl/?url=${encodeURIComponent(url)}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           <button 
                             type="button" 
-                            onClick={() => setExistingImages(prev => prev.filter((_, i) => i !== idx))}
+                            onClick={() => removeExistingImage(url)}
                             style={{
-                              position: 'absolute', top: '-4px', right: '-4px', background: '#C0392B', color: '#fff',
+                              position: 'absolute', top: '2px', right: '2px', background: 'rgba(192, 57, 43, 0.85)', color: '#fff',
                               border: 'none', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px',
-                              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700'
+                              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
                             title="Удалить это фото"
-                          >✕</button>
+                          >
+                            <FaTimes />
+                          </button>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  <label style={{ fontSize: '13px', fontWeight: '700', color: '#365E42', marginTop: '6px' }}>Добавить еще фото:</label>
+                  <label style={{ fontSize: '13px', fontWeight: '700', color: '#365E42', marginTop: '4px' }}>Добавить еще фото:</label>
                   <input type="file" accept="image/*" multiple onChange={e => setEditFiles(Array.from(e.target.files))} />
 
                   <div style={{ display: 'flex', gap: '12px', marginTop: '14px' }}>
