@@ -53,7 +53,7 @@ export default function AboutTeam() {
                 {/* Сетка карточек */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
                     gap: '30px',
                     alignItems: 'stretch'
                 }}>
@@ -64,7 +64,7 @@ export default function AboutTeam() {
                                 background: '#FFFFFF',
                                 borderRadius: '16px',
                                 border: '2px solid #E5E5E5',
-                                padding: '30px 24px',
+                                padding: '36px 28px',
                                 textAlign: 'center',
                                 boxShadow: '0 4px 16px rgba(0,0,0,0.02)',
                                 transition: 'all 0.3s ease',
@@ -83,11 +83,11 @@ export default function AboutTeam() {
                                 e.currentTarget.style.borderColor = '#E5E5E5';
                             }}
                         >
-                            {/* Прямоугольный контейнер под фото */}
+                            {/* Круглый контейнер под фото — фиксированный размер, чтобы не искажался */}
                             <div style={{
-                                width: '60%',
-                                height: '180px', // Высота фотографии
-                                borderRadius: '100%', // Легкое скругление углов вместо полного круга
+                                width: '220px',
+                                height: '220px',
+                                borderRadius: '50%', // Полный круг: работает верно только при равных width/height
                                 marginBottom: '20px',
                                 border: '2px solid #365E42',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -95,7 +95,8 @@ export default function AboutTeam() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                background: '#F9F9F9'
+                                background: '#F9F9F9',
+                                flexShrink: 0
                             }}>
                                 <img 
                                     src={member.image} 
