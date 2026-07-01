@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import aboutBanner from '../assets/about.png'; 
 import { useEffect } from 'react';
 import DocumentsSection from '../components/DocumentsSection';
+import aboutGif from '../assets/cat-3.gif';
 
 export default function About() {
     useEffect(() => {
@@ -58,7 +59,7 @@ export default function About() {
                     fontSize: '16px', 
                     lineHeight: '1.95', 
                     color: '#333333', 
-                    marginBottom: '45px',
+                    marginBottom: '10px',
                     textAlign: 'center'
                 }}>
                     Мы — команда волонтёров мини-приюта «Добрый городок» в Санкт-Петербурге. 

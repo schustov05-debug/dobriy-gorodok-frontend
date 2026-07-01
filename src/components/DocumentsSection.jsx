@@ -2,6 +2,7 @@
 // Блок "Документы и реквизиты" для страницы "О приюте" — кликабельные документы для скачивания
 import termsPdf from '../assets/docs/terms-and-conditions.pdf';
 import privacyPdf from '../assets/docs/privacy-policy.pdf';
+import catGif from '../assets/cat-3.gif'; // Импорт новой GIF
 
 const DOCUMENTS = [
   { title: 'Условия и положения', file: termsPdf, filename: 'Условия и положения.pdf' },
@@ -13,13 +14,33 @@ export default function DocumentsSection() {
     <section style={{
       maxWidth: '1000px',
       margin: '0 auto',
-      padding: '0px 5%',
+      padding: '0px 0%',
       textAlign: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center' // Центрируем GIF и контент по горизонтали
     }}>
+      
+      {/* GIF-анимация без отступов снизу */}
+      <img 
+        src={catGif} 
+        alt="Кот" 
+        style={{
+          display: 'block',
+          margin: '0',
+          padding: '0',
+          marginBottom: '0px', // Гарантируем отсутствие отступа снизу
+          maxWidth: '380px',   // Можете изменить размер под ваш дизайн
+          width: '100%',
+          objectFit: 'contain'
+        }}
+      />
+
       <h2 style={{
         fontSize: '32px',
         fontWeight: '700',
         color: '#1E2D24',
+        marginTop: '0px',      // Обязательно сбрасываем стандартный отступ H2 сверху
         marginBottom: '36px',
       }}>
         Документы и реквизиты
