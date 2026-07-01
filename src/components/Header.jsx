@@ -194,7 +194,7 @@ export default function Header() {
                                 </svg>
                             </Link>
 
-                            <div style={{ position: 'relative' }}>
+                            <div style={{ position: 'relative' }} ref={notifsRef}>
                                 <button 
                                     onClick={toggleNotifications}
                                     style={{
@@ -237,7 +237,6 @@ export default function Header() {
 
                                 {showNotifs && (
                                     <div 
-                                    ref={notifsRef}
                                     style={{
                                         position: 'absolute',
                                         top: '120%',
