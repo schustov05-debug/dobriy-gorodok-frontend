@@ -1,6 +1,7 @@
 // src/components/Header.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import logoImg from '../assets/logo.png';
@@ -33,6 +34,10 @@ export default function Header() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Стейты для показа/скрытия паролей
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     
     // Стейт для выпадающего списка уведомлений
     const [showNotifs, setShowNotifs] = useState(false);
@@ -64,12 +69,16 @@ export default function Header() {
         setPassword('');
         setConfirmPassword('');
         setError('');
+        setShowPassword(false);
+        setShowConfirmPassword(false);
         setModalOpen(true);
     };
 
     const closeModal = () => {
         setModalOpen(false);
         setError('');
+        setShowPassword(false);
+        setShowConfirmPassword(false);
     };
     
     const switchMode = (newMode) => {
@@ -78,6 +87,8 @@ export default function Header() {
         setEmail('');
         setPassword('');
         setConfirmPassword('');
+        setShowPassword(false);
+        setShowConfirmPassword(false);
     };
     
     const toggleNotifications = () => {
@@ -362,16 +373,60 @@ export default function Header() {
                             </div>
                             <div>
                                 <label style={{ fontSize: '14px', fontWeight: '500', color: '#333', display: 'block', marginBottom: '6px' }}>Пароль</label>
-                                <input type="password" placeholder="Введите пароль"
-                                    value={password} onChange={(e) => setPassword(e.target.value)}
-                                    style={inputStyle} required />
+                                <div style={{ position: 'relative' }}>
+                                    <input type={showPassword ? 'text' : 'password'} placeholder="Введите пароль"
+                                        value={password} onChange={(e) => setPassword(e.target.value)}
+                                        style={{ ...inputStyle, paddingRight: '44px' }} required />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                                        style={{
+                                            position: 'absolute',
+                                            right: '12px',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            background: 'none',
+                                            border: 'none',
+                                            padding: 0,
+                                            cursor: 'pointer',
+                                            color: '#888',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                    </button>
+                                </div>
                             </div>
                             {mode === 'register' && (
                                 <div>
                                     <label style={{ fontSize: '14px', fontWeight: '500', color: '#333', display: 'block', marginBottom: '6px' }}>Подтверждение пароля</label>
-                                    <input type="password" placeholder="Повторите пароль"
-                                        value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                                        style={inputStyle} required />
+                                    <div style={{ position: 'relative' }}>
+                                        <input type={showConfirmPassword ? 'text' : 'password'} placeholder="Повторите пароль"
+                                            value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                                            style={{ ...inputStyle, paddingRight: '44px' }} required />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                            aria-label={showConfirmPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '12px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'none',
+                                                border: 'none',
+                                                padding: 0,
+                                                cursor: 'pointer',
+                                                color: '#888',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                             {error && (
