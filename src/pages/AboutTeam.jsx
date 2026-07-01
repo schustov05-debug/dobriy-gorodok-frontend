@@ -40,7 +40,7 @@ export default function AboutTeam() {
                 
                 {/* Заголовок страницы */}
                 <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-                    <h1 style={{ fontSize: '36px', fontWeight: '500', color: '#1E2D24', margin: '0 0 16px 0' }}>
+                    <h1 style={{ fontSize: '36px', fontWeight: '700', color: '#1E2D24', margin: '0 0 16px 0' }}>
                         О команде
                     </h1>
                     <p style={{ fontSize: '16px', color: '#000000', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6' }}>
@@ -63,7 +63,7 @@ export default function AboutTeam() {
                             style={{
                                 background: '#FFFFFF',
                                 borderRadius: '16px',
-                                border: '1px solid #E5E5E5',
+                                border: '2px solid #E5E5E5',
                                 padding: '30px 24px',
                                 textAlign: 'center',
                                 boxShadow: '0 4px 16px rgba(0,0,0,0.02)',

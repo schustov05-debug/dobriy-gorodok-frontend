@@ -47,7 +47,7 @@ export default function About() {
                 
                 <h1 style={{ 
                     fontSize: '32px', 
-                    fontWeight: '500', 
+                    fontWeight: '700', 
                     color: '#000000', 
                     marginBottom: '25px'
                 }}>

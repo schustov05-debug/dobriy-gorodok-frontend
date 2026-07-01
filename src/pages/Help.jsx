@@ -119,7 +119,7 @@ export default function Help() {
             <div style={{ padding: '25px 5%' }}>
                 
                 <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-                    <h1 style={{ fontSize: '32px', fontWeight: '500', color: '#000000', marginBottom: '15px' }}>
+                    <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#000000', marginBottom: '15px' }}>
                         Как помочь нашему приюту
                     </h1>
                     <p style={{ fontSize: '16px', color: '#333333', maxWidth: '600px', margin: '0 auto', lineHeight: '1.95' }}>
