@@ -1,5 +1,3 @@
-// src/pages/AboutTeam.jsx
-// 1. Импортируем фотографии из папки src/assets
 import nastyaPhoto from '../assets/nastyaPhoto.jpg';
 import denisPhoto from '../assets/denisPhoto.jpg';
 import kirillPhoto from '../assets/kirillPhoto.jpg';
@@ -38,7 +36,6 @@ export default function AboutTeam() {
         <main style={{ backgroundColor: '#F8FAF7', minHeight: 'calc(100vh - 80px)', padding: '30px 40px', boxSizing: 'border-box' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
                 
-                {/* Заголовок страницы */}
                 <div style={{ textAlign: 'center', marginBottom: '50px' }}>
                     <h1 style={{ fontSize: '36px', fontWeight: '700', color: '#1E2D24', margin: '0 0 16px 0' }}>
                         О команде
@@ -50,7 +47,6 @@ export default function AboutTeam() {
                     <div style={{ width: '60px', height: '3px', backgroundColor: '#365E42', margin: '20px auto 0', borderRadius: '2px' }} />
                 </div>
 
-                {/* Сетка карточек */}
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
@@ -83,11 +79,11 @@ export default function AboutTeam() {
                                 e.currentTarget.style.borderColor = '#E5E5E5';
                             }}
                         >
-                            {/* Круглый контейнер под фото — фиксированный размер, чтобы не искажался */}
+                           
                             <div style={{
                                 width: '220px',
                                 height: '220px',
-                                borderRadius: '50%', // Полный круг: работает верно только при равных width/height
+                                borderRadius: '50%', 
                                 marginBottom: '20px',
                                 border: '2px solid #365E42',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -104,17 +100,15 @@ export default function AboutTeam() {
                                     style={{ 
                                         width: '100%', 
                                         height: '100%', 
-                                        objectFit: 'cover' // Фото будет аккуратно заполнять весь прямоугольник
+                                        objectFit: 'cover'
                                     }} 
                                 />
                             </div>
 
-                            {/* Имя */}
                             <h3 style={{ fontSize: '22px', fontWeight: '700', color: '#1E2D24', margin: '0 0 6px 0' }}>
                                 {member.name}
                             </h3>
-                            
-                            {/* Роль / Бейдж */}
+
                             <span style={{
                                 backgroundColor: '#365E42',
                                 color: '#FFFFFF',
@@ -129,7 +123,6 @@ export default function AboutTeam() {
                                 {member.role}
                             </span>
 
-                            {/* Описание задач */}
                             <p style={{
                                 fontSize: '14px',
                                 color: '#666666',

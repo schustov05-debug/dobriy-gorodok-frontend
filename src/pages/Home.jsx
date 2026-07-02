@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +9,7 @@ import catGif from '../assets/cat-2.gif';
 import PetsCarousel from '../components/PetsCarousel';
 
 export default function Home() {
-    const { user } = useAuth(); // Получаем данные об авторизованном пользователе
+    const { user } = useAuth();
     
     const [formData, setFormData] = useState({
         name: '',
@@ -24,17 +23,14 @@ export default function Home() {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
 
-    // ЭФФЕКТ ДЛЯ АВТОЗАПОЛНЕНИЯ ДАННЫХ
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (user) {
-            // Email у нас обычно доступен сразу из контекста авторизации
             setFormData(prev => ({
                 ...prev,
                 email: user.email || ''
             }));
 
-            // Имя и телефон надежнее стянуть из профиля на бэкенде
             const fetchProfileForForm = async () => {
                 try {
                     const res = await api.get('/api/profile');
@@ -50,7 +46,6 @@ export default function Home() {
 
             fetchProfileForForm();
         } else {
-            // Если пользователь вышел из аккаунта, очищаем поля
             setFormData({
                 name: '',
                 email: '',
@@ -90,8 +85,6 @@ export default function Home() {
 
             setSuccess(true);
             
-            // После успешной отправки очищаем только тему и сообщение, 
-            // а данные пользователя оставляем, чтобы ему не нужно было вводить их заново
             setFormData(prev => ({
                 ...prev,
                 topic: '',
@@ -120,7 +113,6 @@ export default function Home() {
     return (
         <div style={{ fontFamily: 'sans-serif', backgroundColor: '#F8FAF7', minHeight: '100vh', position: 'relative' }}>
             
-            {/* ГЛАВНЫЙ БАННЕР */}
             <section style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -148,10 +140,8 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* СЕКЦИЯ: ПИТОМЦЫ ПРИЮТА */}
             <PetsCarousel />
 
-            {/* СЕКЦИЯ: ФОРМА ОБРАТНОЙ СВЯЗИ */}
             <section id="questions-form" style={{ 
                 width: '100%', 
                 display: 'flex', 
@@ -265,7 +255,6 @@ export default function Home() {
                 }} 
             />
 
-            {/* ПЛАВАЮЩАЯ КНОПКА */}
             <button 
                 onClick={scrollToQuestions}
                 style={{

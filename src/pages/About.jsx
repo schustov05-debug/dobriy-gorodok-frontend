@@ -1,4 +1,3 @@
-// src/pages/About.jsx
 import { Link } from 'react-router-dom';
 import aboutBanner from '../assets/about.png'; 
 import { useEffect } from 'react';
@@ -19,8 +18,8 @@ export default function About() {
 
             <div style={{ 
                 width: '100%', 
-                height: '400px',          // Строго фиксированная высота баннера
-                overflow: 'hidden',       // Скрываем всё, что выходит за рамки 400px
+                height: '400px',          
+                overflow: 'hidden',  
                 position: 'relative',
                 backgroundColor: '#F5F5F5' 
             }}>
@@ -30,14 +29,13 @@ export default function About() {
                     style={{ 
                         width: '100%', 
                         height: '100%', 
-                        objectFit: 'cover',     // Изображение масштабируется без искажения пропорций
-                        objectPosition: 'center', // Фокус картинки всегда остается строго по центру
+                        objectFit: 'cover',     
+                        objectPosition: 'center',
                         display: 'block'
                     }} 
                 />
             </div>
 
-            {/* ОСНОВНОЙ ТЕКСТОВЫЙ БЛОК */}
             <div style={{ 
                 maxWidth: '900px', 
                 margin: '0 auto', 
@@ -68,7 +66,6 @@ export default function About() {
                     человека более 50 питомцев.
                 </p>
 
-                {/* БЛОК С КНОПКАМИ ДЕЙСТВИЯ */}
                 <div style={{ 
                     display: 'flex', 
                     justifyContent: 'center', 

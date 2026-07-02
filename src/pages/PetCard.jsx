@@ -1,4 +1,3 @@
-// src/pages/PetCard.jsx
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -60,10 +59,9 @@ export default function PetCard() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
 
-  // Стейт для модальных окон ('edit', 'delete', 'notAuth', 'notAuthFav', 'noProfile', 'confirm' или null)
+
   const [modal, setModal] = useState(null); 
-  
-  // Стейты для редактирования
+
   const [editName, setEditName] = useState('');
   const [editType, setEditType] = useState('dog');
   const [editAge, setEditAge] = useState('');
@@ -79,8 +77,7 @@ export default function PetCard() {
       const petRes = await api.get(`/api/pets/${id}`);
       const petData = petRes.data;
       setPet(petData);
-      
-      // Инициализация полей редактирования
+
       setEditName(petData.name || '');
       setEditType(petData.type || 'dog');
       setEditAge(petData.age || '');
@@ -92,7 +89,6 @@ export default function PetCard() {
       setActiveImageIndex(0);
 
       if (user) {
-        // 1. Проверяем статус заявки
         try {
           const appCheck = await api.get(`/api/applications/check/${id}`);
           setHasApplied(appCheck.data.applied);
@@ -100,7 +96,6 @@ export default function PetCard() {
           console.error("Ошибка проверки заявки:", e);
         }
 
-        // 2. Проверяем избранное
         try {
           const favRes = await api.get('/api/favorites');
           const isFav = favRes.data.some(fav => String(fav.pet_id ? fav.pet_id : fav) === String(id));
@@ -124,7 +119,6 @@ export default function PetCard() {
     loadPetData();
   }, [id, user]);
 
-  // Управление лайтбоксом с клавиатуры: ← → листают фото, Esc закрывает
   useEffect(() => {
     if (!lightboxOpen || !pet) return;
 
@@ -146,7 +140,6 @@ export default function PetCard() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxOpen, pet]);
 
-  // Логика кнопки "Забрать домой"
   const handleApply = async () => {
     if (!user) { setModal('notAuth'); return; }
     try {
@@ -177,7 +170,7 @@ export default function PetCard() {
 
   const handleFavoriteToggle = async () => {
     if (!user) {
-      setModal('notAuthFav'); // Переключаем на специализированный стейт
+      setModal('notAuthFav'); 
       return;
     }
     const prevState = isFavorite;
@@ -283,14 +276,12 @@ export default function PetCard() {
     <div style={{ backgroundColor: '#F8FAF7', minHeight: 'calc(100vh - 80px)', fontFamily: 'sans-serif', padding: '40px 5%' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         
-        {/* Кнопка возврата */}
         <Link to="/pets" style={{ textDecoration: 'none', color: '#365E42', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
           <FaChevronLeft style={{ fontSize: '12px' }} /> Назад к каталогу
         </Link>
 
         <div style={{ display: 'flex', gap: '40px', background: '#FFF', borderRadius: '16px', padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', position: 'relative' }}>
           
-          {/* Кнопка «Избранное» */}
           <button
             onClick={handleFavoriteToggle}
             style={{
@@ -304,7 +295,6 @@ export default function PetCard() {
             {isFavorite ? <FaHeart style={{ fontSize: '22px' }} /> : <FaRegHeart style={{ fontSize: '22px' }} />}
           </button>
 
-          {/* ЛЕВАЯ ЧАСТЬ: Изображения */}
           <div style={{ width: '450px', flexShrink: 0 }}>
             <div style={{ width: '100%', height: '380px', borderRadius: '12px', overflow: 'hidden', background: '#E8F0E8', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
               {proxiedMainSrc ? (
@@ -320,7 +310,6 @@ export default function PetCard() {
                 <FaCat style={{ fontSize: '100px', color: '#365E42' }} />
               )}
 
-              {/* Стрелки навигации по галерее */}
               {petImages.length > 1 && (
                 <>
                   <button 
@@ -339,7 +328,6 @@ export default function PetCard() {
               )}
             </div>
 
-            {/* Миниатюры */}
             {petImages.length > 1 && (
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px', overflowX: 'auto', paddingBottom: '4px' }}>
                 {petImages.map((img, idx) => (
@@ -359,7 +347,6 @@ export default function PetCard() {
             )}
           </div>
 
-          {/* ПРАВАЯ ЧАСТЬ: Описание */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingRight: '40px' }}>
             <h1 style={{ fontSize: '32px', color: '#1E2D24', margin: '0 0 12px 0', fontWeight: '700' }}>{pet.name}</h1>
             
@@ -384,7 +371,6 @@ export default function PetCard() {
               </p>
             </div>
 
-            {/* Кнопки связи / Действия админа */}
             <div style={{ marginTop: 'auto', display: 'flex', gap: '12px' }}>
               <button 
                 onClick={handleApply} 
@@ -424,7 +410,6 @@ export default function PetCard() {
         </div>
       </div>
 
-      {/* ── ЛАЙТБОКС: увеличенное фото питомца ── */}
       {lightboxOpen && proxiedMainSrc && (
         <div
           onClick={() => setLightboxOpen(false)}
@@ -453,7 +438,6 @@ export default function PetCard() {
               style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px', display: 'block' }}
             />
 
-            {/* Навигация по галерее прямо в лайтбоксе */}
             {petImages.length > 1 && (
               <>
                 <button
@@ -474,12 +458,11 @@ export default function PetCard() {
         </div>
       )}
 
-      {/* ── МОДАЛЬНЫЕ ОКНА СИСТЕМЫ ── */}
       {modal && (
         <div onClick={() => setModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#FDF9EE', borderRadius: '16px', padding: '36px', maxWidth: '440px', width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)', textAlign: 'center', boxSizing: 'border-box' }}>
 
-            {/* Окно неавторизованного пользователя для кнопки ЗАЯВКИ */}
+
             {modal === 'notAuth' && (
               <>
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
@@ -551,7 +534,6 @@ export default function PetCard() {
               </>
             )}
 
-            {/* ВСПЛЫВАЮЩЕЕ ОКНО РЕДАКТИРОВАНИЯ */}
             {modal === 'edit' && (
               <div style={{ maxHeight: '80vh', overflowY: 'auto', paddingRight: '4px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -574,7 +556,6 @@ export default function PetCard() {
                   </select>
                   <textarea placeholder="Описание..." value={editDescription} onChange={e => setEditDescription(e.target.value)} style={{ ...inputStyle, height: '80px', resize: 'none' }} />
                   
-                  {/* УПРАВЛЕНИЕ СУЩЕСТВУЮЩИМИ ФОТО */}
                   <label style={{ fontSize: '13px', fontWeight: '700', color: '#365E42', margin: '4px 0 0' }}>Текущие фото:</label>
                   {editExistingImages.length === 0 ? (
                     <p style={{ fontSize: '12px', color: '#888', margin: 0 }}>Нет загруженных фото</p>

@@ -1,4 +1,3 @@
-// src/pages/Pets.jsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -66,7 +65,6 @@ export default function Pets() {
   const [filterAge, setFilterAge] = useState([]);
   const [page, setPage] = useState(1);
 
-  // Стейты для модального окна добавления питомца
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState('dog');
@@ -77,7 +75,7 @@ export default function Pets() {
   const [submitting, setSubmitting] = useState(false);
   const [favorites, setFavorites] = useState([]);
 
-  // Стейт для модального окна авторизации (Избранное)
+
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const loadPets = async () => {
@@ -286,7 +284,6 @@ export default function Pets() {
         </div>
       </div>
 
-      {/* ── МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ ДЛЯ ИЗБРАННОГО ── */}
       {showAuthModal && (
         <div onClick={() => setShowAuthModal(false)} style={modalOverlayStyle}>
           <div onClick={e => e.stopPropagation()} style={modalContentStyle}>
@@ -300,7 +297,6 @@ export default function Pets() {
         </div>
       )}
 
-      {/* ── МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ ПИТОМЦА ── */}
       {isAddModalOpen && (
         <div onClick={() => setIsAddModalOpen(false)} style={modalOverlayStyle}>
           <div onClick={e => e.stopPropagation()} style={modalContentStyle}>

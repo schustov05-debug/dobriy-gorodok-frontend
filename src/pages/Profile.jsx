@@ -1,4 +1,3 @@
-// src/pages/Profile.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +8,6 @@ export default function Profile() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 
-    // Данные профиля
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [profileLoading, setProfileLoading] = useState(true);
@@ -17,17 +15,15 @@ export default function Profile() {
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveError, setSaveError] = useState('');
 
-    // Список избранных питомцев
     const [favorites, setFavorites] = useState([]);
     const [dataLoading, setDataLoading] = useState(false);
 
-    // Если не авторизован — редирект на главную
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (!user) navigate('/');
     }, [user, navigate]);
 
-    // Загружаем профиль при входе
+
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (!user) return;
@@ -45,7 +41,7 @@ export default function Profile() {
         fetchProfile();
     }, [user]);
 
-    // Умная загрузка избранного с объединением данных на фронтенде
+
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (!user) return;
@@ -76,7 +72,6 @@ export default function Profile() {
     }, [user]);
 
     const handlePhoneChange = (e) => {
-        // Разрешаем вводить только цифры, +, скобки, пробелы и тире
         const newPhone = e.target.value.replace(/[^\d+()\-\s]/g, '');
         setPhone(newPhone);
     };
@@ -86,15 +81,12 @@ export default function Profile() {
         setSaveError('');
         setSaveSuccess(false);
 
-        // 1. Проверка имени (не пустое)
+
         if (!fullName.trim()) {
             setSaveError('Имя не может быть пустым');
             return;
         }
 
-        // 2. Проверка номера телефона
-        // Регулярное выражение для проверки российских номеров
-        // Принимает форматы: +7 (999) 123-45-67, 89991234567, 8-999-123-45-67 и т.д.
         const phoneRegex = /^(\+7|8|7)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
         
         if (!phone.trim() || !phoneRegex.test(phone.trim())) {
@@ -157,7 +149,6 @@ export default function Profile() {
 
                 <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
 
-                    {/* ── ЛЕВАЯ ЧАСТЬ: Избранное ── */}
                     <div style={{ flex: 1 }}>
                         <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#365E42', margin: '0 0 24px 0' }}>
                             Хочу познакомиться
@@ -187,14 +178,13 @@ export default function Profile() {
                                     const petId = pet.id;
                                     const petName = pet.name || 'Питомец';
                                     
-                                    // ── Обновленная логика получения картинки через прокси ──
+                                    
                                     const petImages = Array.isArray(pet.images) && pet.images.length > 0 
                                       ? pet.images 
                                       : (pet.image_url || pet.photo_url ? [pet.image_url || pet.photo_url] : []);
                                     const imageSrc = petImages[0];
                                     
                                     const proxiedImageSrc = imageSrc ? `https://wsrv.nl/?url=${encodeURIComponent(imageSrc)}` : null;
-                                    // ─────────────────────────────────────────────────────────
 
                                     return (
                                         <div 
@@ -273,7 +263,6 @@ export default function Profile() {
                         )}
                     </div>
 
-                    {/* ── ПРАВАЯ ЧАСТЬ: Мой профиль ── */}
                     <div style={{
                         width: '300px',
                         flexShrink: 0,

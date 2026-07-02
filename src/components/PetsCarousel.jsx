@@ -1,4 +1,3 @@
-// src/components/PetsCarousel.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
@@ -7,7 +6,6 @@ import { FaChevronLeft, FaChevronRight, FaHeart, FaRegHeart, FaDog, FaCat, FaLoc
 
 const VISIBLE_COUNT = 3;
 
-// Вспомогательная функция для форматирования возраста
 function ageLabel(totalMonths) {
   if (totalMonths <= 0) return 'совсем малыш';
   
@@ -39,11 +37,10 @@ export default function PetsCarousel() {
   const navigate = useNavigate();
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterType, setFilterType] = useState('all'); // all | dog | cat
+  const [filterType, setFilterType] = useState('all');
   const [startIndex, setStartIndex] = useState(0);
   const [favorites, setFavorites] = useState([]);
 
-  // Стейт для модального окна авторизации (Избранное)
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
@@ -68,20 +65,17 @@ export default function PetsCarousel() {
     fetchData();
   }, [user]);
 
-  // Функция для синхронизации избранного при клике в карточке
   const toggleFavoriteInParent = (petId) => {
     const idStr = String(petId);
     setFavorites(prev => 
       prev.includes(idStr) 
-        ? prev.filter(id => id !== idStr) // Удаляем, если уже был
-        : [...prev, idStr]               // Добавляем, если не было
+        ? prev.filter(id => id !== idStr)
+        : [...prev, idStr]      
     );
   };
 
-  // Фильтрация
   const filtered = pets.filter(p => filterType === 'all' || p.type === filterType);
 
-  // Сброс прокрутки карусели при смене фильтра
   useEffect(() => { setStartIndex(0); }, [filterType]);
 
   const visiblePets = filtered.slice(startIndex, startIndex + VISIBLE_COUNT);
@@ -121,7 +115,6 @@ export default function PetsCarousel() {
           Питомцы приюта
         </h2>
 
-        {/* Фильтр Все / Собаки / Кошки */}
         <div style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
           {filterBtn('all', 'Все')}
           {filterBtn('dog', 'Собаки')}
@@ -135,10 +128,9 @@ export default function PetsCarousel() {
         ) : (
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
 
-            {/* Стрелка влево */}
             <ArrowButton direction="left" onClick={goPrev} disabled={!canGoPrev} />
 
-            {/* Карточки */}
+
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${VISIBLE_COUNT}, 1fr)`,
@@ -153,17 +145,15 @@ export default function PetsCarousel() {
                   user={user} 
                   isFavoriteInit={favorites.includes(String(pet.id))} 
                   onToggleFavorite={toggleFavoriteInParent} 
-                  onAuthRequired={() => setShowAuthModal(true)} // Передаем вызов модалки
+                  onAuthRequired={() => setShowAuthModal(true)}
                 />
               ))}
             </div>
 
-            {/* Стрелка вправо */}
             <ArrowButton direction="right" onClick={goNext} disabled={!canGoNext} />
           </div>
         )}
 
-        {/* Кнопка "Показать всех" */}
         <div style={{ textAlign: 'center', marginTop: '32px' }}>
           <button
             onClick={() => navigate('/pets')}
@@ -184,7 +174,6 @@ export default function PetsCarousel() {
         </div>
       </section>
 
-      {/* ── МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ ДЛЯ ИЗБРАННОГО ── */}
       {showAuthModal && (
         <div onClick={() => setShowAuthModal(false)} style={modalOverlayStyle}>
           <div onClick={e => e.stopPropagation()} style={modalContentStyle}>
@@ -201,7 +190,6 @@ export default function PetsCarousel() {
   );
 }
 
-// ── Кнопка-стрелка навигации ──────────────────────────────────────────────────
 function ArrowButton({ direction, onClick, disabled }) {
   return (
     <button
@@ -226,7 +214,6 @@ function ArrowButton({ direction, onClick, disabled }) {
   );
 }
 
-// ── Обновленная карточка питомца в карусели с обходом блокировки изображений ──
 function CarouselCard({ pet, user, isFavoriteInit, onToggleFavorite, onAuthRequired }) {
   const [isFavorite, setIsFavorite] = useState(isFavoriteInit);
 
@@ -239,7 +226,6 @@ function CarouselCard({ pet, user, isFavoriteInit, onToggleFavorite, onAuthRequi
     : (pet.image_url || pet.photo_url ? [pet.image_url || pet.photo_url] : []);
   const imageSrc = petImages[0];
 
-  // Проксируем ссылку через weserv.nl для стабильной загрузки без VPN
   const proxiedImageSrc = imageSrc ? `https://wsrv.nl/?url=${encodeURIComponent(imageSrc)}` : null;
 
   const handleFavoriteClick = async (e) => {
@@ -247,14 +233,14 @@ function CarouselCard({ pet, user, isFavoriteInit, onToggleFavorite, onAuthRequi
     e.stopPropagation(); 
 
     if (!user) {
-      onAuthRequired(); // Вызываем переданную функцию вместо alert
+      onAuthRequired();
       return;
     }
 
     const previousState = isFavorite;
     setIsFavorite(!isFavorite);
 
-    // Сразу меняем состояние в родителе для отзывчивости интерфейса
+
     if (onToggleFavorite) {
       onToggleFavorite(pet.id);
     }
@@ -267,7 +253,6 @@ function CarouselCard({ pet, user, isFavoriteInit, onToggleFavorite, onAuthRequi
       }
     } catch (err) {
       console.error("Ошибка при обновлении избранного:", err);
-      // Если запрос завершился ошибкой, откатываем состояние назад
       setIsFavorite(previousState);
       if (onToggleFavorite) {
         onToggleFavorite(pet.id);
@@ -301,7 +286,6 @@ function CarouselCard({ pet, user, isFavoriteInit, onToggleFavorite, onAuthRequi
           e.currentTarget.style.transform = 'none'; 
         }}
       >
-        {/* Кнопка Избранное (Сердечко) поверх изображения */}
         <button
           onClick={handleFavoriteClick}
           style={{
@@ -331,7 +315,6 @@ function CarouselCard({ pet, user, isFavoriteInit, onToggleFavorite, onAuthRequi
         </button>
 
         <div style={{ width: '100%', height: '250px', background: '#E8F0E8', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-          {/* Используем проксированный URL вместо оригинального */}
           {proxiedImageSrc ? (
             <img src={proxiedImageSrc} alt={pet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
@@ -348,7 +331,7 @@ function CarouselCard({ pet, user, isFavoriteInit, onToggleFavorite, onAuthRequi
   );
 }
 
-// ── Стили модального окна ─────────────────────────────────────────────────────
+
 const modalOverlayStyle = { 
   position: 'fixed', 
   inset: 0, 

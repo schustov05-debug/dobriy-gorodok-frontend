@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -35,29 +34,23 @@ export default function Header() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Стейты для показа/скрытия паролей
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     
-    // Стейт для выпадающего списка уведомлений
     const [showNotifs, setShowNotifs] = useState(false);
     const notifsRef = useRef(null);
 
     useEffect(() => {
-        // Функция, которая срабатывает при клике
         const handleClickOutside = (event) => {
-            // Если клик был вне элемента (notifsRef.current) и не по кнопке открытия
             if (notifsRef.current && !notifsRef.current.contains(event.target)) {
                 setShowNotifs(false);
             }
         };
 
-        // Подписываемся на клики, если окно открыто
         if (showNotifs) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
-        // Очистка: удаляем подписку при закрытии или размонтировании
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
@@ -147,7 +140,7 @@ export default function Header() {
                 width: '100%',
             }}>
                 <div style={{
-                    maxWidth: '1350px', // Увеличено с 1100px, чтобы элементы были ближе к краям
+                    maxWidth: '1350px',
                     margin: '0 auto',       
                     padding: '0 40px',      
                     height: '100%',          
@@ -165,7 +158,7 @@ export default function Header() {
                     display: 'flex', 
                     gap: '35px', 
                     alignItems: 'center',
-                    marginTop: '10px' // Добавлено, чтобы немного опустить вкладки вниз
+                    marginTop: '10px'
                 }}>
                     <NavLink to="/">Главная</NavLink>
                     <NavLink to="/pets">Питомцы</NavLink>

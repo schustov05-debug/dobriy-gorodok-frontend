@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -7,7 +6,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Добавляем состояние для уведомлений
+
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
@@ -15,8 +14,7 @@ export function AuthProvider({ children }) {
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
-    
-    // Подтягиваем уведомления при загрузке
+
     const savedNotifs = localStorage.getItem('notifications');
     if (savedNotifs) {
       setNotifications(JSON.parse(savedNotifs));
@@ -37,7 +35,6 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  // Функция для создания нового уведомления
   const addNotification = (message) => {
     const newNotif = {
       id: Date.now(),
@@ -45,7 +42,7 @@ export function AuthProvider({ children }) {
       date: new Date().toISOString(),
     };
     setNotifications((prev) => {
-      const updated = [newNotif, ...prev]; // Новые сверху
+      const updated = [newNotif, ...prev];
       localStorage.setItem('notifications', JSON.stringify(updated));
       return updated;
     });
@@ -56,7 +53,6 @@ export function AuthProvider({ children }) {
     setUnreadCount(0);
   };
 
-  // Функция для очистки всех уведомлений
   const clearNotifications = () => {
     setNotifications([]);
     localStorage.removeItem('notifications');

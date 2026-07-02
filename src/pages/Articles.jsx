@@ -11,12 +11,10 @@ export default function Articles() {
     const [syncing, setSyncing] = useState(false);
     const [page, setPage] = useState(1);
 
-    // Плавная прокрутка наверх при переключении страниц
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [page]);
 
-    // Загрузка статей из БД
     const fetchArticles = async () => {
         try {
             const res = await api.get('/api/articles');
@@ -28,11 +26,6 @@ export default function Articles() {
         }
     };
 
-    // Автосинхронизация при заходе на страницу — не чаще 1 раза в час.
-    // ПРИМЕЧАНИЕ: основное расписание (раз в час) теперь живёт на сервере
-    // через node-cron (см. articles.js), поэтому этот блок — просто
-    // подстраховка на случай, если пользователь зашёл раньше, чем
-    // сервер успел синхронизироваться сам, или сервер долго не перезапускали.
     useEffect(() => {
         const autoSync = async () => {
             const lastSync = localStorage.getItem('articles_last_sync');
@@ -50,14 +43,12 @@ export default function Articles() {
                 }
             }
 
-            // В любом случае загружаем статьи после попытки синхронизации
             fetchArticles();
         };
 
         autoSync();
     }, []);
 
-    // Пагинация
     const totalPages = Math.ceil(articles.length / ARTICLES_PER_PAGE);
     const displayedArticles = articles.slice((page - 1) * ARTICLES_PER_PAGE, page * ARTICLES_PER_PAGE);
 
@@ -98,7 +89,6 @@ export default function Articles() {
         <main style={{ backgroundColor: '#F8FAF7', minHeight: 'calc(100vh - 80px)', padding: '60px 40px', boxSizing: 'border-box' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-                {/* Заголовок секции */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                     <div>
                         <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#1E2D24', margin: '0 0 8px 0' }}>
@@ -107,7 +97,6 @@ export default function Articles() {
                         <p style={{ fontSize: '15px', color: '#555', margin: 0 }}>
                             Актуальные материалы о здоровье, уходе и воспитании ваших питомцев
                         </p>
-                        {/* Подсказка об авто-обновлении */}
                         {syncing && (
                             <p style={{ fontSize: '13px', color: '#888', margin: '6px 0 0', fontStyle: 'italic' }}>
                                 Обновляем ленту...
@@ -122,7 +111,6 @@ export default function Articles() {
                     <p style={{ color: '#888', textAlign: 'center', fontSize: '16px' }}>Статьи пока не добавлены.</p>
                 ) : (
                     <div>
-                        {/* Сетка карточек */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px', marginBottom: '20px' }}>
                             {displayedArticles.map((article) => (
                                 <div
@@ -140,7 +128,6 @@ export default function Articles() {
                                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                                     onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
                                 >
-                                    {/* Превью */}
                                     <div style={{ height: '180px', width: '100%', background: '#F5F5F5', overflow: 'hidden' }}>
                                         {article.image_url ? (
                                             <img src={article.image_url} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -151,7 +138,6 @@ export default function Articles() {
                                         )}
                                     </div>
 
-                                    {/* Контент */}
                                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                                         <span style={{ fontSize: '12px', color: '#888', fontWeight: '600', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>
                                             {article.source_name || 'Ветеринарный блог'}
@@ -177,7 +163,6 @@ export default function Articles() {
                             ))}
                         </div>
 
-                        {/* Пагинация */}
                         {totalPages > 1 && (
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '40px' }}>
                                 <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ ...btnStyle(false), opacity: page === 1 ? 0.4 : 1, cursor: page === 1 ? 'not-allowed' : 'pointer' }}>

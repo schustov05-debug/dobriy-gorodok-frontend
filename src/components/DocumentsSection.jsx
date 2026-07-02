@@ -1,8 +1,6 @@
-// src/components/DocumentsSection.jsx
-// Блок "Документы и реквизиты" для страницы "О приюте" — кликабельные документы для скачивания
 import termsPdf from '../assets/docs/terms-and-conditions.pdf';
 import privacyPdf from '../assets/docs/privacy-policy.pdf';
-import catGif from '../assets/cat-3.gif'; // Импорт новой GIF
+import catGif from '../assets/cat-3.gif';
 
 const DOCUMENTS = [
   { title: 'Условия и положения', file: termsPdf, filename: 'Условия и положения.pdf' },
@@ -18,10 +16,10 @@ export default function DocumentsSection() {
       textAlign: 'center',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center' // Центрируем GIF и контент по горизонтали
+      alignItems: 'center'
     }}>
       
-      {/* GIF-анимация без отступов снизу */}
+      {}
       <img 
         src={catGif} 
         alt="Кот" 
@@ -40,7 +38,7 @@ export default function DocumentsSection() {
         fontSize: '32px',
         fontWeight: '700',
         color: '#1E2D24',
-        marginTop: '0px',      // Обязательно сбрасываем стандартный отступ H2 сверху
+        marginTop: '0px',      
         marginBottom: '36px',
       }}>
         Документы и реквизиты
@@ -60,7 +58,6 @@ export default function DocumentsSection() {
   );
 }
 
-// ── Кликабельная ссылка-документ с иконкой ──────────────────────────────────
 function DocumentLink({ doc }) {
   return (
     <a
@@ -79,7 +76,6 @@ function DocumentLink({ doc }) {
       onMouseEnter={e => e.currentTarget.style.color = '#365E42'}
       onMouseLeave={e => e.currentTarget.style.color = '#1E2D24'}
     >
-      {/* Иконка документа — повторяет стиль с макета */}
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M6 2C5.44772 2 5 2.44772 5 3V21C5 21.5523 5.44772 22 6 22H18C18.5523 22 19 21.5523 19 21V8L13 2H6Z"

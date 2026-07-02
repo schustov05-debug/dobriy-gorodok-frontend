@@ -1,16 +1,12 @@
-// src/pages/Help.jsx
 import { useState, useEffect } from 'react';
 import { FaHeart, FaHandsHelping, FaBone, FaTimes } from 'react-icons/fa';
-// ДОБАВИЛИ: Импорт баннера из ассетов
 import aboutBanner from '../assets/about.png'; 
 
 export default function Help() {
-    // Состояние для управления открытым модальным окном
     const [activeModal, setActiveModal] = useState(null);
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
-    // Данные карточек помощи приюту
     const helpCards = [
         {
             id: 'finance',
@@ -127,14 +123,13 @@ export default function Help() {
                     </p>
                 </div>
 
-                {/* СЕТКА С КАРТОЧКАМИ */}
                 <div style={{ 
                     maxWidth: '1100px', 
                     margin: '0 auto', 
                     display: 'grid', 
                     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
                     gap: '30px',
-                    marginTop: '50px' // Немного уменьшил со 190px, так как сверху теперь есть визуальный вес от баннера
+                    marginTop: '50px'
                 }}>
                     {helpCards.map((card) => (
                         <div 
@@ -146,12 +141,11 @@ export default function Help() {
                                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)', 
                                 display: 'flex', 
                                 flexDirection: 'column', 
-                                justifyContent: 'space-between', // Исправил опечатку 'between' -> 'space-between'
+                                justifyContent: 'space-between',
                                 border: '1px solid #EEF2ED'
                             }}
                         >
                             <div>
-                                {/* Контейнер для иконки */}
                                 <div style={{ 
                                     width: '60px', 
                                     height: '60px', 
@@ -204,9 +198,8 @@ export default function Help() {
                     ))}
                 </div>
 
-            </div> {/* Конец внутренней обертки */}
+            </div>
 
-            {/* МОДАЛЬНОЕ ОКНО (ВСПЛЫВАЮЩАЯ ПАМЯТКА) */}
             {activeModal && (
                 <div style={{ 
                     position: 'fixed', 
@@ -221,7 +214,7 @@ export default function Help() {
                     zIndex: 2000,
                     padding: '20px'
                 }}
-                onClick={() => setActiveModal(null)} // Закрытие при клике на оверлей
+                onClick={() => setActiveModal(null)}
                 >
                     <div style={{ 
                         backgroundColor: '#FFFFFF', 
@@ -233,9 +226,8 @@ export default function Help() {
                         boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                         animation: 'fadeIn 0.2s ease'
                     }}
-                    onClick={(e) => e.stopPropagation()} // Предотвращаем закрытие при клике внутри окна
+                    onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Кнопка закрытия (Крестик) */}
                         <button 
                             onClick={() => setActiveModal(null)}
                             style={{ 
@@ -252,17 +244,14 @@ export default function Help() {
                             <FaTimes />
                         </button>
 
-                        {/* Заголовок памятки */}
                         <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#1E2D24', marginBottom: '20px', paddingRight: '30px' }}>
                             {activeModal.modalTitle}
                         </h2>
 
-                        {/* Динамический контент памятки из массива данных */}
                         <div style={{ fontSize: '15px', color: '#333333' }}>
                             {activeModal.modalContent}
                         </div>
 
-                        {/* Кнопка закрытия внизу */}
                         <button 
                             onClick={() => setActiveModal(null)}
                             style={{ 

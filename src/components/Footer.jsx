@@ -31,7 +31,6 @@ export default function Footer() {
                     gap: '20px'
                 }}
             >
-                {/* Контакты */}
                 <div
                     style={{
                         display: 'flex',
@@ -61,7 +60,6 @@ export default function Footer() {
                     </span>
                 </div>
 
-                {/* Соцсети */}
                 <div style={{ textAlign: 'center' }}>
                     <span
                         style={{
@@ -106,7 +104,6 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Адрес */}
                 <div
                     style={{
                         display: 'flex',
