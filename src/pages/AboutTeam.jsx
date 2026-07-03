@@ -1,6 +1,6 @@
 import nastyaPhoto from '../assets/nastyaPhoto.jpg';
 import denisPhoto from '../assets/denisPhoto.jpg';
-import kirillPhoto from '../assets/kirillPhoto.jpg';
+import kirillPhoto from '../assets/kirillPhoto.jpeg';
 import { useEffect} from 'react';
 
 export default function AboutTeam() {

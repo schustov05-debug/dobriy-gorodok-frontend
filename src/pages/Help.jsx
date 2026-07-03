@@ -21,9 +21,9 @@ export default function Help() {
                     </p>
                     <div style={{ background: '#F4F7F5', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
                         <h4 style={{ margin: '0 0 10px 0', color: '#365E42' }}>Реквизиты для перевода:</h4>
-                        <p style={{ margin: '5px 0' }}><strong>Банк:</strong> Сбербанк</p>
-                        <p style={{ margin: '5px 0' }}><strong>Номер телефона:</strong> +7 (921) 881-72-42</p>
-                        <p style={{ margin: '5px 0' }}><strong>Получатель:</strong> Наталья Евгеньевна С.</p>
+                        <p style={{ margin: '5px 0' }}><strong>Банк:</strong> -</p>
+                        <p style={{ margin: '5px 0' }}><strong>Номер телефона:</strong> -</p>
+                        <p style={{ margin: '5px 0' }}><strong>Получатель:</strong> -</p>
                     </div>
                 </div>
             )
